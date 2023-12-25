@@ -2,7 +2,7 @@
 
 # Neural Radiosity (Falcor + tiny-cuda-nn)
 
-This is an unofficial implementation of the paper [Neural Radiosity](https://saeedhd96.github.io/neural-radiosity/) on SIGGRAPH Asia 2021, with the help of the real-time rendering engine [Falcor](https://github.com/NVIDIAGameWorks/Falcor) and the lightning fast C++/CUDA neural network framework [tiny-cuda-nn](https://github.com/NVlabs/tiny-cuda-nn). This project reproduces the neural radiosity method while running at **over 60 FPS** for radiosity inference.
+This is an unofficial implementation of the paper [Neural Radiosity](https://saeedhd96.github.io/neural-radiosity/) on SIGGRAPH Asia 2021, with the help of the real-time rendering engine [Falcor](https://github.com/NVIDIAGameWorks/Falcor) and the lightning fast C++/CUDA neural network framework [tiny-cuda-nn](https://github.com/NVlabs/tiny-cuda-nn). This project reimplements the neural radiosity method while running at **over 60 FPS** for radiosity inference.
 
 Features include:
 * Randomly sample the objects within a scene based on the total surface area of a triangle mesh
