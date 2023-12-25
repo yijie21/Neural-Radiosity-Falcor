@@ -1,0 +1,57 @@
+{
+	"loss": {
+		"otype": "MAPE"
+	},
+	"optimizer": {
+		"otype": "Ema",
+		"decay": 0.95,
+		"nested": {
+			"otype": "ExponentialDecay",
+			"decay_start": 10000,
+			"decay_interval": 5000,
+			"decay_base": 0.33,
+			"nested": {
+				"otype": "Adam",
+				"learning_rate": 1e-4,
+				"beta1": 0.9,
+				"beta2": 0.99,
+				"epsilon": 1e-15,
+				"l2_reg": 1e-6
+			}
+		}
+	},
+	"encoding": {
+		"otype": "Composite",
+		"nested": [
+			{
+				"otype": "HashGrid",
+				"n_dims_to_encode": 3,
+				"n_levels": 8,
+				"n_features_per_level": 4,
+				"log2_hashmap_size": 19,
+				"base_resolution": 16
+			},
+			{
+				"otype": "SphericalHarmonics",
+				"n_dims_to_encode": 3,
+                "degree": 2
+			},
+			{
+				"otype": "SphericalHarmonics",
+				"n_dims_to_encode": 3,
+                "degree": 2
+			},
+			{
+				"otype": "Identity",
+				"n_dims_to_encode": 3
+			}
+		]
+	},
+	"network": {
+		"otype": "FullyFusedMLP",
+		"activation": "ReLU",
+		"output_activation": "None",
+		"n_neurons": 128,
+		"n_hidden_layers": 2
+	}
+}
