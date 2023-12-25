@@ -10,6 +10,7 @@
 
 # Packman folders.
 /external/packman/
+/external/tiny-cuda-nn/build/
 /tools/.packman/
 
 # IDE folders.

@@ -29,4 +29,5 @@ for i in range(n_collect_frames):
     outputDir = "D:/code/Falcor-Neural-Radiosity/dumped_data/ganesha/frame_{:04d}".format(i)
     os.makedirs(outputDir, exist_ok=True)
     m.frameCapture.outputDir = outputDir
-    render
+    renderFrame()
+    m.frameCapture.capture()
