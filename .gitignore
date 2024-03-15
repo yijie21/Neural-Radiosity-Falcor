@@ -9,6 +9,7 @@
 /media_internal
 
 # Packman folders.
+/external/
 /external/packman/
 /external/tiny-cuda-nn/build/
 /tools/.packman/
@@ -31,3 +32,4 @@
 *.mp4
 *.tlog
 *.bak
+
