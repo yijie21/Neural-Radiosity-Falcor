@@ -1,0 +1,72 @@
+import sys
+import os
+sys.path.append(os.path.dirname(__file__))
+
+from test_materials import *
+
+# Create environment map
+
+envMap = EnvMap('../envmaps/20060807_wells6_hd.hdr')
+envMap.intensity = 1.5
+sceneBuilder.envMap = envMap
+
+# Create geometry
+
+sphereMesh = TriangleMesh.createSphere()
+quadMesh = TriangleMesh.createQuad()
+
+# Create emissive material
+
+emissive = StandardMaterial('emissive')
+emissive.emissiveColor = float3(1, 0.5, 1)
+emissive.emissiveFactor = 10
+
+######################
+# Create materials
+######################
+
+materials = []
+materials.append(createDefaultMaterials())
+materials.append(createNormalMappedMaterials())
+
+
+# Create mesh instances
+
+ROWS = len(materials)
+COLS = 0
+for row in materials:
+    COLS = max(COLS, len(row))
+
+SPACING = 2.5
+
+def addLightStrip(row):
+    y = (0.5 * (ROWS - 1) - row) * SPACING
+    sceneBuilder.addMeshInstance(
+        sceneBuilder.addTriangleMesh(quadMesh, emissive),
+        sceneBuilder.addNode(emissive.name, Transform(translation=float3(0.5 * (COLS - 1) * SPACING, y, -1.5), scaling=float3(2.0 * COLS * SPACING, 1, 0.2), rotationEulerDeg=float3(90, 0, 0)))
+    )
+
+def addSphereRow(row, materials):
+    y = (0.5 * (ROWS - 1) - row) * SPACING
+    for i, material in enumerate(materials):
+        sceneBuilder.addMeshInstance(
+            sceneBuilder.addTriangleMesh(sphereMesh, material),
+            sceneBuilder.addNode(material.name, Transform(translation=float3(i * SPACING, y, 0)))
+        )
+
+for row in range(ROWS):
+    addLightStrip(row)
+    addSphereRow(row, materials[row])
+
+# Create camera
+
+centerX = 0.5 * SPACING * (COLS - 1)
+centerY = 0
+
+camera = Camera()
+camera.position = float3(centerX, centerY, 2 * max(centerX, centerY))
+camera.target = float3(centerX, centerY, 0)
+camera.up = float3(0, 1, 0)
+camera.focalLength = 35
+sceneBuilder.addCamera(camera)
+sceneBuilder.cameraSpeed = 5

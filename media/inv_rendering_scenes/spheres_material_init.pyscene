@@ -1,0 +1,183 @@
+import sys
+import random
+
+##########################################
+# Config:
+#   M^3 = total number of meshes/materials
+#   N+1 = number of material types
+##########################################
+
+M = 7
+N = 8
+
+random.seed(1)
+
+# Create test materials
+#
+# We'll always the same number of materials (= number of test meshes)
+# but cycle through the material types. The rendering will thus be identical,
+# the only difference is what shader code runs for each material.
+
+materialCount = M * M * M
+
+# Create materials.
+material_id = []
+for i in range(M * M * M):
+    material_id.append(i)
+
+materials = []
+for i in range(materialCount):
+    type = random.random()
+    if type < 0.5:
+        # Create test material
+        mtl = StandardMaterial(f'testMtl{i}')
+
+        # Assign random parameters:
+        mtl.baseColor = float4(random.random(), random.random(), random.random(), 1)
+        mtl.baseColor = float4(0.5, 0.5, 0.5, 1)
+        mtl.roughness = 0.1 + random.random() * 0.9
+        mtl.roughness = 0.6
+        mtl.metallic = random.random()
+        mtl.metallic = 0.5
+        mtl.indexOfRefraction = 1 + random.random()
+        mtl.transmissionColor = float3(0, 0, 0)
+        #if random.random() < 0.25:
+        #    mtl.specularTransmission = random.random()
+        #    mtl.transmissionColor = float3(random.random(), random.random(), random.random())
+    elif type < 0.75:
+        mtl = PBRTDiffuseMaterial(f'testMtl{i}')
+        mtl.baseColor = float4(random.random(), random.random(), random.random(), 1)
+        mtl.baseColor = float4(0.5, 0.5, 0.5, 1)
+    else:
+        mtl = PBRTConductorMaterial(f'testMtl{i}')
+        mtl.baseColor = float4(random.random(), random.random(), random.random(), 1)
+        mtl.baseColor = float4(0.5, 0.5, 0.5, 1)
+        mtl.transmissionColor = float3(random.random(), random.random(), random.random())
+        mtl.transmissionColor = float3(0.5, 0.5, 0.5)
+        roughness_x = 0.1 + random.random() * 0.9
+        #roughness_y = 0.1 + random.random() * 0.9
+        mtl.specularParams = float4(0.6, 0.6, 0, 0)
+
+    materials.append(mtl)
+
+
+# Create materials for Cornell box
+
+light = StandardMaterial('Light')
+light.emissiveColor = float3(17, 12, 4)
+light.emissiveFactor = 5
+
+floor = StandardMaterial('Floor')
+floor.baseColor = float4(0.725, 0.71, 0.68, 1.0)
+floor.roughness = 0.5
+
+backWall = StandardMaterial('Back Wall')
+backWall.baseColor = float4(0.725, 0.71, 0.68, 1.0)
+backWall.roughness = 0.5
+
+ceiling = StandardMaterial('Ceiling')
+ceiling.baseColor = float4(0.725, 0.71, 0.68, 1.0)
+ceiling.roughness = 0.5
+
+leftWall = StandardMaterial('Left Wall')
+leftWall.baseColor = float4(0.63, 0.065, 0.05, 1.0)
+leftWall.roughness = 0.5
+
+rightWall = StandardMaterial('Right Wall')
+rightWall.baseColor = float4(0.14, 0.45, 0.091, 1.0)
+rightWall.roughness = 0.5
+
+
+# Create geometry
+
+quadMesh = TriangleMesh.createQuad()
+cubeMesh = TriangleMesh.createCube()
+sphereMesh = TriangleMesh.createSphere(1.0, 128, 64)
+
+#
+# Create test meshes: sphere array with M^3 spheres
+#
+
+spacing = 0.050 / M * 7.0
+jitter  = 0.025 / M * 7.0 # +-jitter
+scale   = 0.015 / M * 7.0
+
+offsetX = -0.5 * spacing * (M - 1)
+offsetY = offsetX + 0.275
+offsetZ = offsetX
+
+sphereID = 0
+
+for i in range(M):
+    for j in range(M):
+        for k in range(M):
+            # Compute position of sphere
+            x = i * spacing + offsetX + random.uniform(-jitter/2, jitter/2)
+            y = j * spacing + offsetY + random.uniform(-jitter/2, jitter/2)
+            z = k * spacing + offsetZ + random.uniform(-jitter/2, jitter/2)
+
+            matID = material_id[sphereID]
+
+            sceneBuilder.addMeshInstance(
+                sceneBuilder.addNode('sphereNode({},{},{})'.format(i,j,k), Transform(scaling=scale, translation=float3(x, y, z))),
+                sceneBuilder.addTriangleMesh(sphereMesh, materials[matID])
+            )
+            sphereID += 1
+            if matID > len(materials):
+                sys.exit("matID out of range")
+
+#
+# Create mesh instances for standard Cornell box
+#
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Floor', Transform(scaling=float3(0.55, 1.0, 0.56))),
+    sceneBuilder.addTriangleMesh(quadMesh, floor)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Ceiling', Transform(scaling=float3(0.55, 1.0, 0.56), translation=float3(0, 0.55, 0), rotationEulerDeg=float3(180, 0, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, ceiling)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Back Wall', Transform(scaling=float3(0.55, 1.0, 0.56), translation=float3(0, 0.275, -0.275), rotationEulerDeg=float3(90, 0, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, backWall)
+)
+
+# Add front wall to make a closed box
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Front Wall', Transform(scaling=float3(0.55, 1.0, 0.56), translation=float3(0, 0.275, 0.275), rotationEulerDeg=float3(-90, 0, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, backWall)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Left Wall', Transform(scaling=float3(0.55, 1.0, 0.56), translation=float3(-0.275, 0.275, 0), rotationEulerDeg=float3(0, 0, -90))),
+    sceneBuilder.addTriangleMesh(quadMesh, leftWall)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Right Wall', Transform(scaling=float3(0.55, 1.0, 0.56), translation=float3(0.275, 0.275, 0), rotationEulerDeg=float3(0, 0, 90))),
+    sceneBuilder.addTriangleMesh(quadMesh, rightWall)
+)
+
+#sceneBuilder.addMeshInstance(
+#    sceneBuilder.addNode('Small Box', Transform(scaling=float3(0.165, 0.165, 0.165), translation=float3(0.09, 0.0825, 0.111), rotationEuler=float3(0, -0.29, 0))),
+#    sceneBuilder.addTriangleMesh(cubeMesh, smallBox)
+#)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Light', Transform(scaling=0.13, translation=float3(0, 0.549, 0), rotationEulerDeg=float3(180, 0, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, light)
+)
+
+# Create camera
+
+camera = Camera()
+camera.position = float3(0, 0.275, 0.275)
+camera.target = float3(0, 0.275, 0)
+camera.up = float3(0, 1, 0)
+camera.focalLength = 20.0
+camera.nearPlane = 0.01
+camera.farPlane = 10.0
+sceneBuilder.addCamera(camera)

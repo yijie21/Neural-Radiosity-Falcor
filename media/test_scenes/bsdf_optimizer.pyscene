@@ -1,0 +1,105 @@
+# Create materials
+
+init_0 = PBRTDiffuseMaterial('Init0')
+init_0.baseColor = float4(0.5, 0.5, 0.5, 1.0)
+
+ref_0 = PBRTDiffuseMaterial('Ref0')
+ref_0.baseColor = float4(0.9, 0.6, 0.2, 1.0)
+
+init_1 = StandardMaterial('Init1', ShadingModel.SpecGloss)
+init_1.baseColor = float4(0.2, 0.2, 0.2, 1)
+init_1.specularParams = float4(0.5, 0.5, 0.5, 0.8)  # roughness (alpha) = 1 - specular.a
+init_1.indexOfRefraction = 1.5
+init_1.transmissionColor = float3(0, 0, 0)
+init_1.diffuseTransmission = 0
+init_1.specularTransmission = 0
+
+ref_1 = StandardMaterial('Ref1', ShadingModel.SpecGloss)
+ref_1.baseColor = float4(0.3, 0.5, 0.05, 1)
+ref_1.specularParams = float4(0.2, 0.4, 0.8, 0.7)  # roughness (alpha) = 1 - specular.a
+ref_1.indexOfRefraction = 1.5
+ref_1.transmissionColor = float3(0, 0, 0)
+ref_1.diffuseTransmission = 0
+ref_1.specularTransmission = 0
+
+init_2 = StandardMaterial('Init2')
+init_2.baseColor = float4(0.3, 0.3, 0.3, 1.0)
+init_2.roughness = 0.5
+init_2.metallic = 0.5
+init_2.indexOfRefraction = 1.5
+init_2.transmissionColor = float3(0, 0, 0)
+init_2.diffuseTransmission = 0
+init_2.specularTransmission = 0
+
+ref_2 = StandardMaterial('Ref2')
+ref_2.baseColor = float4(0.5, 0.9, 0.2, 1.0)
+ref_2.roughness = 0.2
+ref_2.metallic = 0.6
+ref_2.indexOfRefraction = 1.5
+ref_2.transmissionColor = float3(0, 0, 0)
+ref_2.diffuseTransmission = 0
+ref_2.specularTransmission = 0
+
+init_3 = PBRTConductorMaterial('Init3')
+init_3.baseColor = float4(0.5, 0.5, 0.5, 1.0)
+init_3.transmissionColor = float3(0.5, 0.5, 0.5)
+init_3.specularParams = float4(0.6, 0.6, 0, 0)
+
+ref_3 = PBRTConductorMaterial('Ref3')
+ref_3.baseColor = float4(0.7, 0.3, 0.9, 1.0)
+ref_3.transmissionColor = float3(0.2, 0.4, 0.8)
+ref_3.specularParams = float4(0.3, 0.3, 0, 0)
+
+# Create geometry
+
+quadMesh = TriangleMesh.createQuad()
+
+# Create mesh instances
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addTriangleMesh(quadMesh, init_0),
+    sceneBuilder.addNode('Init0', Transform(scaling=float3(1, 1, 1)))
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addTriangleMesh(quadMesh, ref_0),
+    sceneBuilder.addNode('Ref0', Transform(scaling=float3(1, 1, 1)))
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addTriangleMesh(quadMesh, init_1),
+    sceneBuilder.addNode('Init1', Transform(scaling=float3(1, 1, 1)))
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addTriangleMesh(quadMesh, ref_1),
+    sceneBuilder.addNode('Ref1', Transform(scaling=float3(1, 1, 1)))
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addTriangleMesh(quadMesh, init_2),
+    sceneBuilder.addNode('Init2', Transform(scaling=float3(1, 1, 1)))
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addTriangleMesh(quadMesh, ref_2),
+    sceneBuilder.addNode('Ref2', Transform(scaling=float3(1, 1, 1)))
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addTriangleMesh(quadMesh, init_3),
+    sceneBuilder.addNode('Init3', Transform(scaling=float3(1, 1, 1)))
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addTriangleMesh(quadMesh, ref_3),
+    sceneBuilder.addNode('Ref3', Transform(scaling=float3(1, 1, 1)))
+)
+
+# Create camera
+
+camera = Camera()
+camera.position = float3(0, 0.6, 1.375)
+camera.target = float3(0, 0.5, 0)
+camera.up = float3(0, 1, 0)
+sceneBuilder.addCamera(camera)

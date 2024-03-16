@@ -1,0 +1,90 @@
+import sys
+import os
+sys.path.append(os.path.dirname(__file__))
+
+from test_materials import *
+
+# Create environment map
+# Disabled for the test, use for debugging only
+
+#envMap = EnvMap('../envmaps/20060807_wells6_hd.hdr')
+#envMap.intensity = 1.5
+#sceneBuilder.envMap = envMap
+
+# Create geometry
+
+sphereMesh = TriangleMesh.createSphere()
+quadMesh = TriangleMesh.createQuad()
+
+######################
+# Create materials
+######################
+
+# Create emissive material
+emissive = StandardMaterial('emissive')
+emissive.emissiveColor = float3(1, 0.5, 1)
+emissive.emissiveFactor = 10000
+
+# Create wall material
+wallMtl = StandardMaterial('wallMtl')
+wallMtl.baseColor = float4(0.7, 0.7, 0.7, 1.0)
+wallMtl.metallic = 0.0
+wallMtl.roughness = 1.0
+
+# Create test materials
+materials = createNormalMappedMaterials(transmissive=False)
+
+
+# Create mesh instances for material samples
+
+COLS = len(materials)
+
+for i, material in enumerate(materials):
+    x = (i - 0.5 * (COLS - 1))
+
+    sceneBuilder.addMeshInstance(
+        sceneBuilder.addTriangleMesh(quadMesh, material),
+        sceneBuilder.addNode(material.name, Transform(translation=float3(x, 0, 0.5), scaling=float3(1, 1, 1), rotationEulerDeg=float3(0, 0, 0)))
+    )
+    sceneBuilder.addMeshInstance(
+        sceneBuilder.addTriangleMesh(quadMesh, material),
+        sceneBuilder.addNode(material.name, Transform(translation=float3(x, 0, -0.5), scaling=float3(1, 1, 1), rotationEulerDeg=float3(180, 0, 0)))
+    )
+    sceneBuilder.addMeshInstance(
+        sceneBuilder.addTriangleMesh(quadMesh, material),
+        sceneBuilder.addNode(material.name, Transform(translation=float3(x, -1, 0.5), scaling=float3(1, 1, 1), rotationEulerDeg=float3(180, 0, 0)))
+    )
+
+# Create wall behind the material samples
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addTriangleMesh(quadMesh, wallMtl),
+    sceneBuilder.addNode("wall", Transform(translation=float3(0, 1, -0.99), scaling=float3(COLS, 1, 2), rotationEulerDeg=float3(90, 0, 0)))
+)
+
+# Create lights
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addTriangleMesh(quadMesh, emissive),
+    sceneBuilder.addNode(emissive.name, Transform(translation=float3(0, -0.1, 0), scaling=float3(COLS, 1, 2), rotationEulerDeg=float3(0, 0, 0)))
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addTriangleMesh(quadMesh, emissive),
+    sceneBuilder.addNode(emissive.name, Transform(translation=float3(0, -0.2, 0), scaling=float3(COLS, 1, 2), rotationEulerDeg=float3(180, 0, 0)))
+)
+
+
+# Create camera
+
+centerX = 0
+centerY = 2
+distance = COLS
+
+camera = Camera()
+camera.position = float3(centerX, centerY, distance)
+camera.target = float3(centerX, 0, 0)
+camera.up = float3(0, 1, 0)
+camera.focalLength = 35
+sceneBuilder.addCamera(camera)
+sceneBuilder.cameraSpeed = 5

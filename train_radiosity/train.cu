@@ -227,7 +227,7 @@ int main(int argc, char* argv[]) {
 		GPUMatrix<float> sample_coords(n_texture_dims, batch_size);
 
 		for (uint32_t i = 0; i < n_training_steps; i++) {
-			uint32_t training_set_idx = (uint32_t)(rng.next_float() * (n_frames - 1));
+			uint32_t training_set_idx = (uint32_t)(rng.next_float() * n_frames);
 			TrainingMetadata metadata = load_metadata(frame_folders[training_set_idx]);
 			TrainingTexture training_texture = create_training_texture(metadata);
 

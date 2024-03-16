@@ -1,0 +1,28 @@
+# Load FBX
+sceneBuilder.importScene('animated_cubes.fbx')
+
+# Add cameras
+frontCamera = Camera("FrontCamera")
+frontCamera.position = float3(-132.369202,39.946095,-0.077735)
+frontCamera.target = float3(-131.460236,39.530037,-0.051646)
+frontCamera.up = float3(0.000857,1.000000,0.000025)
+sceneBuilder.addCamera(frontCamera)
+
+backCamera = Camera("BackCamera")
+backCamera.position = float3(93.750549,52.591274,-0.019235)
+backCamera.target = float3(92.815163,52.238049,-0.035865)
+backCamera.up = float3(0.000919,1.000000,0.000016)
+sceneBuilder.addCamera(backCamera)
+
+sceneBuilder.selectedCamera = sceneBuilder.cameras[0]
+
+# Change animation settings (Assimp does not automatically detect pre-/post-infinity settings)
+a = sceneBuilder.animations
+a[1].preInfinityBehavior = Animation.Behavior.Cycle # purple cube - Cycle
+a[1].postInfinityBehavior = Animation.Behavior.Cycle
+a[2].preInfinityBehavior = Animation.Behavior.Cycle # red cube - 5 sec fixed Cycle
+a[2].postInfinityBehavior = Animation.Behavior.Cycle
+a[3].preInfinityBehavior = Animation.Behavior.Linear # blue cube - Linear
+a[3].postInfinityBehavior = Animation.Behavior.Linear
+a[4].preInfinityBehavior = Animation.Behavior.Oscillate # pink cube - Oscillate
+a[4].postInfinityBehavior = Animation.Behavior.Oscillate

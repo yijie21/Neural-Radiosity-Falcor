@@ -1,0 +1,87 @@
+# Create triangle meshes
+quadMesh = TriangleMesh.createQuad()
+cubeMesh = TriangleMesh.createCube()
+sphereMesh = TriangleMesh.createSphere()
+
+# Create triangle mesh from a file
+bunnyMesh = TriangleMesh.createFromFile('meshes/bunny.obj')
+
+# Create triangle mesh from scratch
+customMesh = TriangleMesh()
+normal = float3(0, 1, 0)
+customMesh.addVertex(float3(-10, 0, -10), normal, float2(0, 0))
+customMesh.addVertex(float3(10, 0, -10), normal, float2(5, 0))
+customMesh.addVertex(float3(-10, 0, 10), normal, float2(0, 5))
+customMesh.addVertex(float3(10, 0, 10), normal, float2(5, 5))
+customMesh.addTriangle(2, 1, 0)
+customMesh.addTriangle(1, 2, 3)
+
+# Create materials
+red = StandardMaterial('Red')
+red.baseColor = float4(0.8, 0.1, 0.1, 1.0)
+red.roughness = 0.3
+
+green = StandardMaterial('Green')
+green.baseColor = float4(0.1, 0.8, 0.1, 1.0)
+green.roughness = 0.2
+green.emissiveColor = float3(1, 1, 1)
+green.emissiveFactor = 0.1
+
+blue = StandardMaterial('Blue')
+blue.baseColor = float4(0.1, 0.1, 0.8, 1.0)
+blue.roughness = 0.3
+blue.metallic = 1
+
+emissive = StandardMaterial('Emissive')
+emissive.baseColor = float4(1.0, 1.0, 1.0, 1.0)
+emissive.roughness = 0.2
+emissive.emissiveColor = float3(1, 1, 1)
+emissive.emissiveFactor = 20
+
+# Create material with textures
+floor = StandardMaterial('Floor')
+floor.loadTexture(MaterialTextureSlot.BaseColor, 'textures/checker_tile_base_color.png')
+floor.loadTexture(MaterialTextureSlot.Specular, 'textures/checker_tile_specular.png')
+floor.loadTexture(MaterialTextureSlot.Normal, 'textures/checker_tile_normal.png')
+
+# Add meshes to scene builder
+quadMeshID = sceneBuilder.addTriangleMesh(quadMesh, red)
+cubeMeshID = sceneBuilder.addTriangleMesh(cubeMesh, emissive)
+sphereMeshID = sceneBuilder.addTriangleMesh(sphereMesh, blue)
+bunnyMeshID = sceneBuilder.addTriangleMesh(bunnyMesh, green)
+customMeshID = sceneBuilder.addTriangleMesh(customMesh, floor)
+
+# Add scene graph to scene builder
+quadNodeID = sceneBuilder.addNode('Quad', Transform(scaling=2, translation=float3(-3, 1, 0), rotationEulerDeg=float3(90, 0, 0)))
+cubeNodeID = sceneBuilder.addNode('Cube', Transform(scaling=float3(15, 0.2, 0.2), translation=float3(0, 1, -2)))
+sphereNodeID = sceneBuilder.addNode('Sphere', Transform(scaling=1, translation=float3(3, 1, 0)))
+customNodeID = sceneBuilder.addNode('Custom', Transform(scaling=1, rotationEulerDeg=float3(0, 45, 0)))
+bunnyNodeID = sceneBuilder.addNode('Bunny', Transform(scaling=12, translation=float3(0.3, -0.4, 0)), customNodeID)
+
+# Add mesh instances to scene graph
+sceneBuilder.addMeshInstance(quadNodeID, quadMeshID)
+sceneBuilder.addMeshInstance(cubeNodeID, cubeMeshID)
+sceneBuilder.addMeshInstance(sphereNodeID, sphereMeshID)
+sceneBuilder.addMeshInstance(bunnyNodeID, bunnyMeshID)
+sceneBuilder.addMeshInstance(customNodeID, customMeshID)
+
+# Add camera
+camera = Camera('Camera')
+camera.position = float3(0, 0.3, 10)
+camera.target = float3(0, 0.3, 0)
+camera.up = float3(0, 1, 0)
+camera.focalLength = 35
+sceneBuilder.addCamera(camera)
+
+# Add lights
+light0 = DistantLight('Light0')
+light0.direction = float3(1, -1, -1)
+light0.intensity = float3(5, 5, 1)
+light0.angle = 0.1
+sceneBuilder.addLight(light0)
+
+light1 = DistantLight('Light1')
+light1.direction = float3(-1, -1, -1)
+light1.intensity = float3(1, 5, 5)
+light1.angle = 0.1
+sceneBuilder.addLight(light1)

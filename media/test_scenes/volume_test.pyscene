@@ -1,0 +1,142 @@
+# Create geometry
+
+quadMesh = TriangleMesh.createQuad()
+sphereMesh = TriangleMesh.createSphere(radius = 0.5)
+
+# Create room
+
+whiteLightMat = StandardMaterial('White Light')
+whiteLightMat.emissiveColor = float3(1, 1, 1)
+whiteLightMat.emissiveFactor = 10
+
+redLightMat = StandardMaterial('Red Light')
+redLightMat.emissiveColor = float3(1, 0.2, 0.2)
+redLightMat.emissiveFactor = 4
+
+greenLightMat = StandardMaterial('Green Light')
+greenLightMat.emissiveColor = float3(0.2, 1, 0.2)
+greenLightMat.emissiveFactor = 4
+
+blueLightMat = StandardMaterial('Blue Light')
+blueLightMat.emissiveColor = float3(0.2, 0.2, 1.0)
+blueLightMat.emissiveFactor = 4
+
+floorMat = StandardMaterial('Floor')
+floorMat.baseColor = float4(0.725, 0.71, 0.68, 1.0)
+floorMat.roughness = 0.5
+
+backWallMat = StandardMaterial('Back Wall')
+backWallMat.baseColor = float4(0.725, 0.71, 0.68, 1.0)
+backWallMat.roughness = 0.5
+
+ceilingMat = StandardMaterial('Ceiling')
+ceilingMat.baseColor = float4(0.725, 0.71, 0.68, 1.0)
+ceilingMat.roughness = 0.5
+
+leftWallMat = StandardMaterial('Left Wall')
+leftWallMat.baseColor = float4(0.63, 0.065, 0.05, 1.0)
+leftWallMat.roughness = 0.5
+
+rightWallMat = StandardMaterial('Right Wall')
+rightWallMat.baseColor = float4(0.14, 0.45, 0.091, 1.0)
+rightWallMat.roughness = 0.5
+
+roomSize = float3(8, 4, 4)
+roomHalfSize = roomSize / 2
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Floor', Transform(scaling=roomSize)),
+    sceneBuilder.addTriangleMesh(quadMesh, floorMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Ceiling', Transform(scaling=roomSize, translation=float3(0, roomSize.y, 0), rotationEulerDeg=float3(180, 0, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, ceilingMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Back Wall', Transform(scaling=float3(roomSize.x, 1, roomSize.y), translation=float3(0, roomSize.y / 2, -roomSize.z / 2), rotationEulerDeg=float3(90, 0, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, backWallMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Left Wall', Transform(scaling=float3(roomSize.y, 1, roomSize.z), translation=float3(-roomSize.x / 2, roomSize.y / 2, 0), rotationEulerDeg=float3(0, 0, -90))),
+    sceneBuilder.addTriangleMesh(quadMesh, leftWallMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Right Wall', Transform(scaling=float3(roomSize.y, 1, roomSize.z), translation=float3(roomSize.x / 2, roomSize.y / 2, 0), rotationEulerDeg=float3(0, 0, 90))),
+    sceneBuilder.addTriangleMesh(quadMesh, rightWallMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('White Light', Transform(scaling=roomSize * 0.25, translation=float3(0, 0.99 * roomSize.y, 0), rotationEulerDeg=float3(180, 0, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, whiteLightMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Red Light', Transform(scaling=float3(roomSize.x, 1, roomSize.y / 20), translation=float3(0, roomSize.y * 0.7, 0.99 * (-roomSize.z / 2)), rotationEulerDeg=float3(90, 0, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, redLightMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Green Light', Transform(scaling=float3(roomSize.x, 1, roomSize.y / 20), translation=float3(0, roomSize.y * 0.4, 0.99 * (-roomSize.z / 2)), rotationEulerDeg=float3(90, 0, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, greenLightMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Blue Light', Transform(scaling=float3(roomSize.x, 1, roomSize.y / 20), translation=float3(0, roomSize.y * 0.1, 0.99 * (-roomSize.z / 2)), rotationEulerDeg=float3(90, 0, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, blueLightMat)
+)
+
+# Create geometry
+
+lucy = StandardMaterial('Lucy')
+lucy.baseColor = float4(1, 1, 1, 1)
+lucy.roughness = 0.2
+lucy.specularTransmission = 1.0
+lucy.volumeScattering = float3(500, 600, 700) * 0.5
+
+lucyMesh = TriangleMesh.createFromFile('meshes/lucy.obj', smoothNormals=True)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Lucy 1', Transform(translation=float3(-2, 0, 0), rotationEulerDeg=float3(0, 220, 0), scaling=1.8)),
+    sceneBuilder.addTriangleMesh(lucyMesh, lucy)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Lucy 2', Transform(translation=float3(2, 0, 0), rotationEulerDeg=float3(0, 170, 0), scaling=1.8)),
+    sceneBuilder.addTriangleMesh(lucyMesh, lucy)
+)
+
+# Create volume
+
+smoke = Volume('Smoke')
+smoke.loadGrid(Volume.GridSlot.Density, 'volumes/smoke.vdb', 'density')
+smoke.densityScale = 300.0
+smoke.albedo = float3(0.8, 0.9, 1.0)
+
+sceneBuilder.addVolume(smoke, sceneBuilder.addNode('Smoke', Transform(scaling=0.03)))
+
+# Create envmap
+
+envMap = EnvMap('envmaps/20060807_wells6_hd.hdr')
+envMap.intensity = 1.0
+sceneBuilder.envMap = envMap
+
+# Create light
+
+light = DistantLight()
+light.direction = float3(-0.1, -0.5, -0.8)
+light.intensity = float3(2.0)
+light.angle = 0.05
+sceneBuilder.addLight(light)
+
+# Create camera
+
+camera = Camera()
+camera.position = float3(0, roomSize.y / 2, 8)
+camera.target = float3(0, roomSize.y / 2, 0)
+camera.up = float3(0, 1, 0)
+camera.focalLength = 35.0
+sceneBuilder.addCamera(camera)

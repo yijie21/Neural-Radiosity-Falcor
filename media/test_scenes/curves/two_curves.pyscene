@@ -1,0 +1,56 @@
+# Load scene with test curves
+
+sceneBuilder.importScene('two_curves.usda')
+
+# Add camera
+
+camera = Camera('camera1')
+camera.position = float3(5.742301,3.881516,1.004899)
+camera.target = float3(4.872832,3.484469,0.710996)
+camera.up = float3(0, 1, 0)
+camera.focalLength = 20
+sceneBuilder.addCamera(camera)
+
+sceneBuilder.selectedCamera = camera
+sceneBuilder.cameraSpeed = 5.0
+
+# Create environment map
+
+envMap = EnvMap('../envmaps/20060807_wells6_hd.hdr')
+envMap.intensity = 3
+sceneBuilder.envMap = envMap
+
+# Create materials
+
+defaultMtl = Material('DefaultMtl')
+defaultMtl.baseColor = float4(0.5, 0.5, 0.5, 1.0)
+defaultMtl.roughness = 0.5
+defaultMtl.metallic = 0.0
+
+shinyMtl = Material('ShinyMtl')
+shinyMtl.baseColor = float4(0.75, 0.75, 0.9, 1.0)
+shinyMtl.roughness = 0.0
+shinyMtl.metallic = 1.0
+
+# Create some triangle geometry: three sphere meshes
+
+sphereMesh = TriangleMesh.createSphere(radius = 0.5)
+sphereMeshID = sceneBuilder.addTriangleMesh(sphereMesh, defaultMtl)
+
+for i in range(3):
+    translation = float3(3.0 * i - 3.0, 1.0, 0.0)
+    sphereNodeID = sceneBuilder.addNode('sphereNode', Transform(translation=translation))
+    sceneBuilder.addMeshInstance(sphereNodeID, sphereMeshID)
+
+quadMesh = TriangleMesh.createQuad()
+quadMeshID = sceneBuilder.addTriangleMesh(quadMesh, shinyMtl)
+
+quadNodeID = sceneBuilder.addNode('quadNode', Transform(scaling=10, translation=float3(0, 0, 0), rotationEulerDeg=float3(0, 0, 0)))
+sceneBuilder.addMeshInstance(quadNodeID, quadMeshID)
+
+# Create some custom primitives: two unit boxes
+
+for i in range(2):
+    translation = float3(0.0, 1.0, 5.0 * i - 2.5)
+    userID = i # Assign different userIDs
+    sceneBuilder.addCustomPrimitive(userID, AABB(translation - 0.5, translation + 0.5))

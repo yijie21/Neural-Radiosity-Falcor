@@ -1,0 +1,2 @@
+Creative Commons Attribution 4.0 International License.
+https://github.com/KhronosGroup/glTF-Sample-Models/tree/master/2.0/CesiumMan

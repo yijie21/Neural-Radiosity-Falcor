@@ -1,0 +1,14 @@
+sceneBuilder.importScene('CesiumMan.gltf')
+
+# Add environment map
+envMap = EnvMap('../envmaps/20050806-03_hd.hdr')
+envMap.intensity = 3
+sceneBuilder.envMap = envMap
+
+# Add camera
+camera = Camera()
+camera.position = float3(1.040540, 1.101066, 1.724960)
+camera.target = float3(0.520405, 0.901247, 0.894579)
+camera.up = float3(0, 1, 0)
+camera.focalLength = 21.0
+sceneBuilder.addCamera(camera)

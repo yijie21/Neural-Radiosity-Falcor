@@ -1,0 +1,91 @@
+
+light = StandardMaterial('Light')
+light.emissiveColor = float3(1, 1, 1)
+# light.emissiveFactor = 100
+
+floorMtl = StandardMaterial('Floor')
+floorMtl.baseColor = float4(0.4, 0.4, 0.4, 1)
+floorMtl.roughness = 1.0
+floorMtl.indexOfRefraction = 1.0
+floorMtl.loadTexture(MaterialTextureSlot.BaseColor, 'checkerboard.png')
+
+roomMtl = StandardMaterial('Walls')
+roomMtl.baseColor = float4(0.4, 0.4, 0.4, 1)
+roomMtl.roughness = 1.0
+roomMtl.indexOfRefraction = 1.0
+roomMtl.loadTexture(MaterialTextureSlot.BaseColor, 'checkerboard.png')
+
+refractiveMtl = StandardMaterial('RefractiveMtl')
+refractiveMtl.baseColor = float4(1, 1, 1, 1)
+refractiveMtl.roughness = 0.0
+refractiveMtl.metallic = 0.0
+refractiveMtl.indexOfRefraction = 1.5;
+refractiveMtl.doubleSided = True;
+refractiveMtl.specularTransmission = 1.0
+
+reflectiveMtl = StandardMaterial('ReflectiveMtl')
+reflectiveMtl.baseColor = float4(1, 1, 1.0, 1)
+reflectiveMtl.roughness = 0.0
+reflectiveMtl.metallic = 1.0
+reflectiveMtl.indexOfRefraction = 1.0;
+reflectiveMtl.doubleSided = True;
+
+# Create geometry
+floorMesh = TriangleMesh.createFromFile('floor.obj', smoothNormals=False)
+roomMesh = TriangleMesh.createFromFile('room.obj', smoothNormals=False)
+cubeMesh = TriangleMesh.createCube()
+sphereMesh = TriangleMesh.createSphere()
+
+# Create mesh instances
+sceneBuilder.addMeshInstance(
+   sceneBuilder.addTriangleMesh(floorMesh, floorMtl),
+   sceneBuilder.addNode('Floor', Transform(translation=float3(0, 0.0, 0), rotationEuler=float3(0, 0, 0), scaling=1))
+)
+
+sceneBuilder.addMeshInstance(
+   sceneBuilder.addTriangleMesh(roomMesh, roomMtl),
+   sceneBuilder.addNode('Room', Transform(translation=float3(0, 0.0, 0), rotationEuler=float3(0, 0, 0), scaling=1))
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addTriangleMesh(cubeMesh, refractiveMtl),
+    sceneBuilder.addNode('Cube', Transform(translation=float3(-2,0.55,0), rotationEuler=float3(0,0,0), scaling=1))
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addTriangleMesh(sphereMesh, reflectiveMtl),
+    sceneBuilder.addNode('SphereRefl', Transform(translation=float3(0.65, 0.5, 0), rotationEuler=float3(0,0,0), scaling=0.5))
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addTriangleMesh(sphereMesh, refractiveMtl),
+    sceneBuilder.addNode('SphereRefr', Transform(translation=float3(-0.65, 0.5, 0), rotationEuler=float3(0,0,0), scaling=0.5))
+)
+
+
+# Create camera
+camera = Camera()
+camera.position = float3(-3.0, 1.5, 2.5)
+camera.target = float3(-2.3, 1, 1.5)
+camera.up = float3(0, 1, 0)
+sceneBuilder.addCamera(camera)
+
+light = PointLight()
+light.position = float3(4, 4, 4)
+light.intensity = float3(15,15,15)
+sceneBuilder.addLight(light)
+
+light = PointLight()
+light.position = float3(-4, 4, 4)
+light.intensity = float3(15,15,15)
+sceneBuilder.addLight(light)
+
+light = PointLight()
+light.position = float3(-4, 4, -4)
+light.intensity = float3(15,15,15)
+sceneBuilder.addLight(light)
+
+light = PointLight()
+light.position = float3(4, 4, -4)
+light.intensity = float3(15,15,15)
+sceneBuilder.addLight(light)

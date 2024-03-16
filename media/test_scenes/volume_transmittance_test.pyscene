@@ -1,0 +1,39 @@
+# Create materials
+
+surface = StandardMaterial('Surface')
+surface.baseColor = float4(1.0, 1.0, 1.0, 1.0)
+surface.roughness = 0.5
+
+# Create geometry
+
+quadMesh = TriangleMesh.createQuad()
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Surface', Transform(scaling=5, translation=float3(0.0, 0.0, -1.0), rotationEulerDeg=float3(90.0, 0.0, 0.0))),
+    sceneBuilder.addTriangleMesh(quadMesh, surface)
+)
+
+# Create volume
+
+smoke = Volume('Smoke')
+smoke.loadGrid(Volume.GridSlot.Density, 'volumes/smoke.vdb', 'density')
+smoke.densityScale = 10.0
+smoke.albedo = float3(0.0)
+
+sceneBuilder.addVolume(smoke, sceneBuilder.addNode('Smoke', Transform(scaling=0.02)))
+
+# Create light
+
+light = DirectionalLight('Light')
+light.intensity = float3(10.0)
+light.direction = float3(1.0, 0.0, -1.0)
+sceneBuilder.addLight(light)
+
+# Create camera
+
+camera = Camera()
+camera.position = float3(0.5, 0.5, 8)
+camera.target = float3(0.5, 0.5, 0)
+camera.up = float3(0, 1, 0)
+camera.focalLength = 100.0
+sceneBuilder.addCamera(camera)

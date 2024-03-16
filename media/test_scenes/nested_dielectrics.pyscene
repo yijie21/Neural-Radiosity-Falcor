@@ -1,0 +1,132 @@
+## Simple test scene for nested dielectrics.
+
+# Create environment map
+envMap = EnvMap('envmaps/hallstatt4_hd.hdr')
+envMap.intensity = 3.0
+envMap.rotation = float3(0, 45, 0)
+sceneBuilder.envMap = envMap
+
+# Add camera
+camera = Camera('camera1')
+camera.position = float3(0, 0.2, 2.5)
+camera.target = float3(0, 0.2, 0)
+camera.up = float3(0, 1, 0)
+camera.focalLength = 20
+sceneBuilder.addCamera(camera)
+
+# Absorption coefficients (or extinction coefficient in absence of scattering) in scene units (meters)
+volume_absorption = {
+    'window_glass': float3(2.0, 1.0, 1.5),
+    'red_water' : float3(10, 20, 30),
+}
+
+# Create materials
+floorMtl = StandardMaterial('Floor')
+floorMtl.baseColor = float4(0.5, 0.5, 0.5, 1.0)
+floorMtl.roughness = 0.15
+floorMtl.metallic = 1
+
+# Solid material, default priority (0)
+solidMtl = StandardMaterial('Solid')
+solidMtl.baseColor = float4(1.0, 1.0, 1.0, 1.0)
+solidMtl.roughness = 1.0
+solidMtl.metallic = 0
+
+# Base glass material, medium priority (2)
+glassMtl = StandardMaterial("WindowGlass")
+glassMtl.roughness = 0
+glassMtl.metallic = 0
+glassMtl.indexOfRefraction = 1.52
+glassMtl.specularTransmission = 1
+glassMtl.doubleSided = True
+glassMtl.nestedPriority = 2
+glassMtl.volumeAbsorption = volume_absorption['window_glass']
+
+# Colored transparent material, lower priority (1)
+color1Mtl = StandardMaterial("RedWater1")
+color1Mtl.roughness = 0
+color1Mtl.metallic = 0
+color1Mtl.indexOfRefraction = 1.333
+color1Mtl.specularTransmission = 1
+color1Mtl.doubleSided = True
+color1Mtl.nestedPriority = 1
+color1Mtl.volumeAbsorption = volume_absorption['red_water']
+
+# Colored transparent material, same priority (2)
+color2Mtl = StandardMaterial("RedWater2")
+color2Mtl.roughness = 0
+color2Mtl.metallic = 0
+color2Mtl.indexOfRefraction = 1.333
+color2Mtl.specularTransmission = 1
+color2Mtl.doubleSided = True
+color2Mtl.nestedPriority = 2
+color2Mtl.volumeAbsorption = volume_absorption['red_water']
+
+# Colored transparent material, higher priority (3)
+color3Mtl = StandardMaterial("RedWater3")
+color3Mtl.roughness = 0
+color3Mtl.metallic = 0
+color3Mtl.indexOfRefraction = 1.333
+color3Mtl.specularTransmission = 1
+color3Mtl.doubleSided = True
+color3Mtl.nestedPriority = 3
+color3Mtl.volumeAbsorption = volume_absorption['red_water']
+
+
+# Create meshes
+floor = TriangleMesh.createQuad()
+glassCube = TriangleMesh.createCube()
+solidCube = TriangleMesh.createCube()
+clearCube = TriangleMesh.createCube()
+color1Cube = TriangleMesh.createCube()
+color2Cube = TriangleMesh.createCube()
+color3Cube = TriangleMesh.createCube()
+
+floor.name = 'floor'
+glassCube.name = 'glassCube'
+solidCube.name = 'solidCube'
+clearCube.name = 'clearCube'
+color1Cube.name = 'color1Cube'
+color2Cube.name = 'color2Cube'
+color3Cube.name = 'color3Cube'
+
+# Add meshes
+floorID = sceneBuilder.addTriangleMesh(floor, floorMtl)
+glassCubeID = sceneBuilder.addTriangleMesh(glassCube, glassMtl)
+solidCubeID = sceneBuilder.addTriangleMesh(solidCube, solidMtl)
+clearCubeID = sceneBuilder.addTriangleMesh(clearCube, glassMtl)
+color1CubeID = sceneBuilder.addTriangleMesh(color1Cube, color1Mtl)
+color2CubeID = sceneBuilder.addTriangleMesh(color2Cube, color2Mtl)
+color3CubeID = sceneBuilder.addTriangleMesh(color3Cube, color3Mtl)
+
+# Create scene graph
+
+# Floor plane
+floorNodeID = sceneBuilder.addNode('floorNode', Transform(scaling=100, translation=float3(0, 0, 0), rotationEulerDeg=float3(0, 0, 0)))
+sceneBuilder.addMeshInstance(floorNodeID, floorID)
+
+# Glass blocks
+for i in range(5):
+    x = i - 2
+    nodeID = sceneBuilder.addNode('glassCubeNode', Transform(scaling=float3(0.6, 1, 0.2), translation=float3(x, 0.55, 0), rotationEulerDeg=float3(0, 0, 0)))
+    sceneBuilder.addMeshInstance(nodeID, glassCubeID)
+
+# Test blocks of different material and placement
+y = [0.25, 0.40, 0.55, 0.70, 0.85]
+z = [0.20, 0.05, 0.0, -0.05, -0.20]
+
+for i in range(5):
+    solidCubeNodeID = sceneBuilder.addNode('solidCubeNode', Transform(scaling=float3(0.5, 0.1, 0.15), translation=float3(-2.0, y[i], z[i]), rotationEulerDeg=float3(0, 0, 0)))
+    sceneBuilder.addMeshInstance(solidCubeNodeID, solidCubeID)
+
+    clearCubeNodeID = sceneBuilder.addNode('clearCubeNode', Transform(scaling=float3(0.5, 0.1, 0.15), translation=float3(-1.0, y[i], z[i]), rotationEulerDeg=float3(0, 0, 0)))
+    sceneBuilder.addMeshInstance(clearCubeNodeID, clearCubeID)
+
+    color1CubeNodeID = sceneBuilder.addNode('color1CubeNode', Transform(scaling=float3(0.5, 0.1, 0.15), translation=float3(0.0, y[i], z[i]), rotationEulerDeg=float3(0, 0, 0)))
+    sceneBuilder.addMeshInstance(color1CubeNodeID, color1CubeID)
+
+    color2CubeNodeID = sceneBuilder.addNode('color2CubeNode', Transform(scaling=float3(0.5, 0.1, 0.15), translation=float3(1.0, y[i], z[i]), rotationEulerDeg=float3(0, 0, 0)))
+    sceneBuilder.addMeshInstance(color2CubeNodeID, color2CubeID)
+
+    color3CubeNodeID = sceneBuilder.addNode('color3CubeNode', Transform(scaling=float3(0.5, 0.1, 0.15), translation=float3(2.0, y[i], z[i]), rotationEulerDeg=float3(0, 0, 0)))
+    sceneBuilder.addMeshInstance(color3CubeNodeID, color3CubeID)

@@ -1,0 +1,299 @@
+# Create geometry
+
+quadMesh = TriangleMesh.createQuad()
+sphereMesh = TriangleMesh.createSphere(radius = 0.5)
+
+# Create room
+
+whiteLightMat = StandardMaterial('White Light')
+whiteLightMat.emissiveColor = float3(1, 1, 1)
+whiteLightMat.emissiveFactor = 10
+
+redLightMat = StandardMaterial('Red Light')
+redLightMat.emissiveColor = float3(1, 0.2, 0.2)
+redLightMat.emissiveFactor = 4
+
+greenLightMat = StandardMaterial('Green Light')
+greenLightMat.emissiveColor = float3(0.2, 1, 0.2)
+greenLightMat.emissiveFactor = 4
+
+blueLightMat = StandardMaterial('Blue Light')
+blueLightMat.emissiveColor = float3(0.2, 0.2, 1.0)
+blueLightMat.emissiveFactor = 4
+
+floorMat = StandardMaterial('Floor')
+floorMat.baseColor = float4(0.725, 0.71, 0.68, 1.0)
+floorMat.roughness = 0.5
+
+backWallMat = StandardMaterial('Back Wall')
+backWallMat.baseColor = float4(0.725, 0.71, 0.68, 1.0)
+backWallMat.roughness = 0.5
+
+ceilingMat = StandardMaterial('Ceiling')
+ceilingMat.baseColor = float4(0.725, 0.71, 0.68, 1.0)
+ceilingMat.roughness = 0.5
+
+leftWallMat = StandardMaterial('Left Wall')
+leftWallMat.baseColor = float4(0.63, 0.065, 0.05, 1.0)
+leftWallMat.roughness = 0.5
+
+rightWallMat = StandardMaterial('Right Wall')
+rightWallMat.baseColor = float4(0.14, 0.45, 0.091, 1.0)
+rightWallMat.roughness = 0.5
+
+roomSize = float3(8, 4, 4)
+roomHalfSize = roomSize / 2
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Floor', Transform(scaling=roomSize)),
+    sceneBuilder.addTriangleMesh(quadMesh, floorMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Ceiling', Transform(scaling=roomSize, translation=float3(0, roomSize.y, 0), rotationEulerDeg=float3(180, 0, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, ceilingMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Back Wall', Transform(scaling=float3(roomSize.x, 1, roomSize.y), translation=float3(0, roomSize.y / 2, -roomSize.z / 2), rotationEulerDeg=float3(90, 0, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, backWallMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Left Wall', Transform(scaling=float3(roomSize.y, 1, roomSize.z), translation=float3(-roomSize.x / 2, roomSize.y / 2, 0), rotationEulerDeg=float3(0, 0, -90))),
+    sceneBuilder.addTriangleMesh(quadMesh, leftWallMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Right Wall', Transform(scaling=float3(roomSize.y, 1, roomSize.z), translation=float3(roomSize.x / 2, roomSize.y / 2, 0), rotationEulerDeg=float3(0, 0, 90))),
+    sceneBuilder.addTriangleMesh(quadMesh, rightWallMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('White Light', Transform(scaling=roomSize * 0.25, translation=float3(0, 0.99 * roomSize.y, 0), rotationEulerDeg=float3(180, 0, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, whiteLightMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Red Light', Transform(scaling=float3(roomSize.x, 1, roomSize.y / 20), translation=float3(0, roomSize.y * 0.7, 0.99 * (-roomSize.z / 2)), rotationEulerDeg=float3(90, 0, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, redLightMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Green Light', Transform(scaling=float3(roomSize.x, 1, roomSize.y / 20), translation=float3(0, roomSize.y * 0.4, 0.99 * (-roomSize.z / 2)), rotationEulerDeg=float3(90, 0, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, greenLightMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Blue Light', Transform(scaling=float3(roomSize.x, 1, roomSize.y / 20), translation=float3(0, roomSize.y * 0.1, 0.99 * (-roomSize.z / 2)), rotationEulerDeg=float3(90, 0, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, blueLightMat)
+)
+
+# Material objects
+
+colX = [-2.5, -1.25, 0.0, 1.25, 2.5]
+rowY = [0.5, 1.6, 2.7]
+rowZ = [0.5, 0, -0.5]
+
+def getTranslation(col, row):
+    return float3(colX[col], rowY[row], rowZ[row])
+
+# Column 0 - Mirror quads (diffuse, glossy, smooth)
+
+diffuseMirrorMat = StandardMaterial('Diffuse Mirror')
+diffuseMirrorMat.baseColor = float4(1.0, 1.0, 1.0, 1.0)
+diffuseMirrorMat.roughness = 1.0
+diffuseMirrorMat.metallic = 1.0
+diffuseMirrorMat.doubleSided = True
+
+glossyMirrorMat = StandardMaterial('Glossy Mirror')
+glossyMirrorMat.baseColor = float4(1.0, 1.0, 1.0, 1.0)
+glossyMirrorMat.roughness = 0.2
+glossyMirrorMat.metallic = 1.0
+glossyMirrorMat.doubleSided = True
+
+smoothMirrorMat = StandardMaterial('Smooth Mirror')
+smoothMirrorMat.baseColor = float4(1.0, 1.0, 1.0, 1.0)
+smoothMirrorMat.roughness = 0.0
+smoothMirrorMat.metallic = 1.0
+smoothMirrorMat.doubleSided = True
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Diffuse Mirror', Transform(translation=float3(colX[0], rowY[0], rowZ[0]), rotationEulerDeg=float3(90, 60, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, diffuseMirrorMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Glossy Mirror', Transform(translation=float3(colX[0], rowY[1], rowZ[1]), rotationEulerDeg=float3(90, 60, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, glossyMirrorMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Smooth Mirror', Transform(translation=float3(colX[0], rowY[2], rowZ[2]), rotationEulerDeg=float3(90, 60, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, smoothMirrorMat)
+)
+
+# Column 1 - Metal spheres (diffuse, glossy, smooth)
+
+metalBaseColor = float4(243 / 255.0, 201 / 255.0, 104 / 255.0, 1.0)
+metalIoR = 1.35
+
+diffuseMetalMat = StandardMaterial('Diffuse Metal')
+diffuseMetalMat.baseColor = metalBaseColor
+diffuseMetalMat.indexOfRefraction = metalIoR
+diffuseMetalMat.roughness = 1.0
+diffuseMetalMat.metallic = 1.0
+
+glossyMetalMat = StandardMaterial('Glossy Metal')
+glossyMetalMat.baseColor = metalBaseColor
+glossyMetalMat.indexOfRefraction = metalIoR
+glossyMetalMat.roughness = 0.2
+glossyMetalMat.metallic = 1.0
+
+smoothMetalMat = StandardMaterial('Smooth Metal')
+smoothMetalMat.baseColor = metalBaseColor
+smoothMetalMat.indexOfRefraction = metalIoR
+smoothMetalMat.roughness = 0.0
+smoothMetalMat.metallic = 1.0
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Diffuse Metal', Transform(translation=float3(colX[1], rowY[0], rowZ[0]))),
+    sceneBuilder.addTriangleMesh(sphereMesh, diffuseMetalMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Glossy Metal', Transform(translation=float3(colX[1], rowY[1], rowZ[1]))),
+    sceneBuilder.addTriangleMesh(sphereMesh, glossyMetalMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Smooth Metal', Transform(translation=float3(colX[1], rowY[2], rowZ[2]))),
+    sceneBuilder.addTriangleMesh(sphereMesh, smoothMetalMat)
+)
+
+# Column 2 - Non-metal spheres (diffuse, glossy, smooth)
+
+baseColor = float4(0.7, 0.8, 0.7, 1.0)
+
+diffuseMat = StandardMaterial('Diffuse')
+diffuseMat.baseColor = baseColor
+diffuseMat.roughness = 1.0
+
+glossyMat = StandardMaterial('Glossy')
+glossyMat.baseColor = baseColor
+glossyMat.roughness = 0.2
+
+smoothMat = StandardMaterial('Smooth')
+smoothMat.baseColor = baseColor
+smoothMat.roughness = 0.0
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Diffuse', Transform(translation=float3(colX[2], rowY[0], rowZ[0]))),
+    sceneBuilder.addTriangleMesh(sphereMesh, diffuseMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Glossy', Transform(translation=float3(colX[2], rowY[1], rowZ[1]))),
+    sceneBuilder.addTriangleMesh(sphereMesh, glossyMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Smooth', Transform(translation=float3(colX[2], rowY[2], rowZ[2]))),
+    sceneBuilder.addTriangleMesh(sphereMesh, smoothMat)
+)
+
+# Column 3 - Transmissive spheres (diffuse, glossy, smooth)
+
+diffuseTransMat = StandardMaterial('Diffuse Transmission')
+diffuseTransMat.baseColor = float4(0.7, 0.7, 0.7, 1.0)
+diffuseTransMat.roughness = 0.2
+diffuseTransMat.diffuseTransmission = 1.0
+diffuseTransMat.doubleSided = True
+
+roughGlassMat = StandardMaterial('Rough Glass')
+roughGlassMat.baseColor = float4(1.0, 1.0, 1.0, 1.0)
+roughGlassMat.roughness = 0.2
+roughGlassMat.specularTransmission = 1.0
+roughGlassMat.doubleSided = True
+
+smoothGlassMat = StandardMaterial('Smooth Glass')
+smoothGlassMat.baseColor = float4(1.0, 1.0, 1.0, 1.0)
+smoothGlassMat.roughness = 0.0
+smoothGlassMat.specularTransmission = 1.0
+smoothGlassMat.doubleSided = True
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Diffuse Transmission', Transform(translation=float3(colX[3], rowY[0], rowZ[0]))),
+    sceneBuilder.addTriangleMesh(sphereMesh, diffuseTransMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Rough Glass', Transform(translation=float3(colX[3], rowY[1], rowZ[1]))),
+    sceneBuilder.addTriangleMesh(sphereMesh, roughGlassMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Smooth Glass', Transform(translation=float3(colX[3], rowY[2], rowZ[2]))),
+    sceneBuilder.addTriangleMesh(sphereMesh, smoothGlassMat)
+)
+
+# Column 5 - Thin transmissive quads (diffuse, glossy, smooth)
+
+thinDiffuseTransMat = StandardMaterial('Thin Diffuse Transmission')
+thinDiffuseTransMat.baseColor = float4(1.0, 1.0, 1.0, 1.0)
+thinDiffuseTransMat.roughness = 1.0
+thinDiffuseTransMat.diffuseTransmission = 1.0
+thinDiffuseTransMat.thinSurface = True
+thinDiffuseTransMat.doubleSided = True
+
+thinGlossyTransMat = StandardMaterial('Thin Glossy Transmission')
+thinGlossyTransMat.baseColor = float4(1.0, 1.0, 1.0, 1.0)
+thinGlossyTransMat.roughness = 0.2
+thinGlossyTransMat.specularTransmission = 1.0
+thinGlossyTransMat.thinSurface = True
+thinGlossyTransMat.doubleSided = True
+
+thinSmoothTransMat = StandardMaterial('Thin Smooth Transmission')
+thinSmoothTransMat.baseColor = float4(1.0, 1.0, 1.0, 1.0)
+thinSmoothTransMat.roughness = 0.0
+thinSmoothTransMat.specularTransmission = 1.0
+thinSmoothTransMat.thinSurface = True
+thinSmoothTransMat.doubleSided = True
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Thin Diffuse Transmission', Transform(translation=float3(colX[4], rowY[0], rowZ[0]), rotationEulerDeg=float3(90, -60, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, thinDiffuseTransMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Thin Glossy Transmission', Transform(translation=float3(colX[4], rowY[1], rowZ[1]), rotationEulerDeg=float3(90, -60, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, thinGlossyTransMat)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Thin Smooth Transmission', Transform(translation=float3(colX[4], rowY[2], rowZ[2]), rotationEulerDeg=float3(90, -60, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, thinSmoothTransMat)
+)
+
+# Create envmap
+
+envMap = EnvMap('envmaps/20060807_wells6_hd.hdr')
+envMap.intensity = 1.0
+sceneBuilder.envMap = envMap
+
+# Create light
+
+light = DistantLight()
+light.direction = float3(-0.1, -0.5, -0.8)
+light.intensity = float3(2.0)
+light.angle = 0.05
+sceneBuilder.addLight(light)
+
+# Create camera
+
+camera = Camera()
+camera.position = float3(0, roomSize.y / 2, 8)
+camera.target = float3(0, roomSize.y / 2, 0)
+camera.up = float3(0, 1, 0)
+camera.focalLength = 35.0
+sceneBuilder.addCamera(camera)

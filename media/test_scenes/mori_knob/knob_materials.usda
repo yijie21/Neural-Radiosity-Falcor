@@ -1,0 +1,210 @@
+#usda 1.0
+(
+    customLayerData = {
+        dictionary cameraSettings = {
+            dictionary Front = {
+                double3 position = (0, 0, 50000.89126998186)
+                double radius = 500
+            }
+            dictionary Perspective = {
+                double3 position = (-0.43081096688972464, 5.445924427224259, -8.916953800139366)
+                double3 target = (0.16022966197191435, -3.5822292487319967, 4.956755195086746)
+            }
+            dictionary Right = {
+                double3 position = (-50004.89126998186, 0, -1.110331632636227e-11)
+                double radius = 500
+            }
+            dictionary Top = {
+                double3 position = (-4.3298574810718034e-12, 50000.891498982906, 1.1102428198791016e-11)
+                double radius = 500
+            }
+            string boundCamera = "/World/Camera"
+        }
+        dictionary omni_layer = {
+            dictionary muteness = {
+            }
+        }
+        dictionary renderSettings = {
+            float "rtx:pathtracing:maxBounces" = 8
+            token "rtx:rendermode" = "PathTracing"
+        }
+    }
+    defaultPrim = "World"
+    metersPerUnit = 0.009999999776482582
+    upAxis = "Y"
+)
+
+def Xform "World"
+{
+    def Xform "Knot0" (
+        instanceable = false
+        references = @./knob.usd@
+    )
+    {
+        color3f[] primvars:displayColor = [(1, 0, 0)]
+        matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (-4, 0, 0, 1) )
+        uniform token[] xformOpOrder = ["xformOp:transform"]
+    }
+
+    def Xform "Knot1" (
+        instanceable = false
+        references = @./knob.usd@
+    )
+    {
+        color3f[] primvars:displayColor = [(1, 0, 0)]
+        matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (-2, 0, 0, 1) )
+        uniform token[] xformOpOrder = ["xformOp:transform"]
+        over "mesh_0"
+        {
+            over "Material"
+            {
+                over "Shader"
+                {
+                    float inputs:metallic.timeSamples = {
+                        0: 0.25,
+                    }
+                    float inputs:metallic.connect = </null>
+                    float inputs:ior = 1.0
+                    float inputs:opacity.timeSamples = {
+                        0: 0.5,
+                    }
+                }
+            }
+        }
+    }
+
+    def Xform "Knot2" (
+        instanceable = false
+        references = @./knob.usd@
+    )
+    {
+        color3f[] primvars:displayColor = [(1, 0, 0)]
+        matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+        uniform token[] xformOpOrder = ["xformOp:transform"]
+        over "mesh_0"
+        {
+            over "Material"
+            {
+                over "Shader"
+                {
+                    float inputs:metallic.timeSamples = {
+                        0: 0.0,
+                    }
+                    float inputs:metallic.connect = </null>
+                    normal3f inputs:normal.connect = </null>
+                    float inputs:roughness.connect = </null>
+                    float inputs:roughness.timeSamples = {
+                        0: 0.9,
+                    }
+                }
+            }
+        }
+    }
+
+    def Xform "Knot3" (
+        instanceable = false
+        references = @./knob.usd@
+    )
+    {
+        color3f[] primvars:displayColor = [(1, 0, 0)]
+        matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (2, 0, 0, 1) )
+        uniform token[] xformOpOrder = ["xformOp:transform"]
+        over "mesh_0"
+        {
+            over "Material"
+            {
+                over "Shader"
+                {
+                    float inputs:opacity.timeSamples = {
+                        0: 0.05,
+                    }
+                    float inputs:roughness.connect = </null>
+                    float inputs:roughness = 0.0
+                    normal3f inputs:normal.connect = </null>
+                    color3f inputs:diffuseColor = (0, 0, 0)
+                    color3f inputs:diffuseColor.connect = </null>
+                    float inputs:ior = 1.5
+                    float inputs:metallic.connect = </null>
+                    float inputs:metallic.timeSamples = {
+                        0: 0.,
+                    }
+                }
+            }
+        }
+    }
+
+    def Xform "Knot4" (
+        instanceable = false
+        references = @./knob.usd@
+    )
+    {
+        color3f[] primvars:displayColor = [(1, 0, 0)]
+        matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (4, 0, 0, 1) )
+        uniform token[] xformOpOrder = ["xformOp:transform"]
+        over "mesh_0"
+        {
+            over "Material"
+            {
+                over "Shader"
+                {
+                    normal3f inputs:normal.connect = </null>
+                    float inputs:roughness.connect = </null>
+                    float inputs:roughness = 0.0
+                    color3f inputs:diffuseColor = (.86, .89, .91)
+                    color3f inputs:diffuseColor.connect = </null>
+                    float inputs:metallic.connect = </null>
+                    float inputs:metallic.timeSamples = {
+                        0: 1,
+                    }
+                    float inputs:roughness.timeSamples = {
+                        0: 0,
+                    }
+                }
+            }
+        }
+    }
+
+    def Camera "Camera" (
+        no_delete = false
+    )
+    {
+        float4[] clippingPlanes = []
+        float2 clippingRange = (1, 10000000)
+        float focalLength = 18.147562
+        float focusDistance = 0
+        float fStop = 0
+        float horizontalAperture = 20.955
+        float horizontalApertureOffset = 0
+        token projection = "perspective"
+        uniform token purpose = "default"
+        double shutter:close = 0
+        double shutter:open = 0
+        uniform token stereoRole = "mono"
+        float verticalAperture = 11.799203
+        float verticalApertureOffset = 0
+        token visibility = "inherited"
+        double3 xformOp:rotateXYZ = (146.9701481079729, -2.439410349765498, -179.99999999999986)
+        double3 xformOp:scale = (1.000000000000087, 1.0000000000000444, 1.0000000000001348)
+        double3 xformOp:translate = (-0.43081096688972575, 5.445924427224275, -8.916953800139444)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
+    }
+}
+
+def DomeLight "Dome" (
+    prepend apiSchemas = ["ShapingAPI"]
+    kind = "model"
+)
+{
+    float exposure = 9.1
+    float intensity = 8
+    float shaping:cone:angle = 180
+    float shaping:cone:softness
+    float specular = 1
+    asset texture:file = @./LightProbes/Sandy_Area_Tiny.hdr@
+    token texture:format = "latlong"
+    token visibility = "inherited"
+    float3 xformOp:rotateZYX = (270, 0, 0)
+    float3 xformOp:translate = (0, 0, 0)
+    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZYX"]
+}
+

@@ -1,0 +1,167 @@
+# Create environment map
+
+envMap = EnvMap('envmaps/20060807_wells6_hd.hdr')
+envMap.intensity = 1.5
+sceneBuilder.envMap = envMap
+
+# Create geometry
+
+sphereMesh = TriangleMesh.createSphere()
+quadMesh = TriangleMesh.createQuad()
+
+# Create emissive material
+
+emissive = StandardMaterial('emissive')
+emissive.emissiveColor = float3(1, 0.5, 1)
+emissive.emissiveFactor = 10
+
+# Create mesh instances
+
+COLS = 11
+ROWS = 0
+SPACING = 2.5
+
+def addLightStrip():
+    sceneBuilder.addMeshInstance(
+        sceneBuilder.addTriangleMesh(quadMesh, emissive),
+        sceneBuilder.addNode(emissive.name, Transform(translation=float3(0.5 * (COLS - 1) * SPACING, -ROWS * SPACING, -0.5), scaling=float3(COLS * SPACING, 1, 0.2), rotationEulerDeg=float3(90, 0, 0)))
+    )
+
+def addSphereRow(materials):
+    global ROWS
+    for i, material in enumerate(materials):
+        sceneBuilder.addMeshInstance(
+            sceneBuilder.addTriangleMesh(sphereMesh, material),
+            sceneBuilder.addNode(material.name, Transform(translation=float3(i * SPACING, -ROWS * SPACING, 0)))
+        )
+    ROWS += 1
+
+def addQuadRow(materials):
+    global ROWS
+    for i, material in enumerate(materials):
+        sceneBuilder.addMeshInstance(
+            sceneBuilder.addTriangleMesh(quadMesh, material),
+            sceneBuilder.addNode(material.name, Transform(translation=float3(i * SPACING, -ROWS * SPACING, 0), scaling=2, rotationEulerDeg=float3(90, 0, 0)))
+        )
+    ROWS += 1
+
+# metallic
+
+materials = []
+for i in range(COLS):
+    metallic = i / float(COLS - 1)
+    material = StandardMaterial('metallic=%.2f' % metallic)
+    material.baseColor = float4(0.5, 0.5, 0.5, 1.0)
+    material.roughness = 0.1
+    material.metallic = metallic
+    materials.append(material)
+addSphereRow(materials)
+
+# roughness
+
+materials = []
+for i in range(COLS):
+    roughness = i / float(COLS - 1)
+    material = StandardMaterial('roughness=%.2f' % roughness)
+    material.baseColor = float4(0.5, 0.5, 0.5, 1.0)
+    material.roughness = roughness
+    materials.append(material)
+addSphereRow(materials)
+
+# specularTransmission
+
+materials = []
+for i in range(COLS):
+    specularTransmission = i / float(COLS - 1)
+    material = StandardMaterial('specularTransmission=%.2f' % specularTransmission)
+    material.baseColor = float4(0.5, 0.5, 0.5, 1.0)
+    material.roughness = 0.2
+    material.specularTransmission = specularTransmission
+    material.doubleSided = True
+    materials.append(material)
+addSphereRow(materials)
+
+materials = []
+for i in range(COLS):
+    specularTransmission = i / float(COLS - 1)
+    material = StandardMaterial('(delta) specularTransmission=%.2f' % specularTransmission)
+    material.baseColor = float4(0.5, 0.5, 0.5, 1.0)
+    material.roughness = 0
+    material.specularTransmission = specularTransmission
+    material.doubleSided = True
+    materials.append(material)
+addSphereRow(materials)
+
+materials = []
+for i in range(COLS):
+    specularTransmission = i / float(COLS - 1)
+    material = StandardMaterial('(thin) specularTransmission=%.2f' % specularTransmission)
+    material.baseColor = float4(0.5, 0.5, 0.5, 1.0)
+    material.roughness = 0.5
+    material.specularTransmission = specularTransmission
+    material.thinSurface = True
+    materials.append(material)
+addLightStrip()
+addQuadRow(materials)
+
+# indefOfRefraction
+
+materials = []
+for i in range(COLS):
+    indexOfRefraction = 1 + i / float(COLS - 1)
+    material = StandardMaterial('(opaque) indexOfRefraction=%.2f' % indexOfRefraction)
+    material.baseColor = float4(0.5, 0.5, 0.5, 1.0)
+    material.roughness = 0.1
+    material.indexOfRefraction = indexOfRefraction
+    materials.append(material)
+addSphereRow(materials)
+
+materials = []
+for i in range(COLS):
+    indexOfRefraction = 1 + i / float(COLS - 1)
+    material = StandardMaterial('(transparent) indexOfRefraction=%.2f' % indexOfRefraction)
+    material.baseColor = float4(0.5, 0.5, 0.5, 1.0)
+    material.roughness = 0.1
+    material.indexOfRefraction = indexOfRefraction
+    material.specularTransmission = 1
+    material.doubleSided = True
+    materials.append(material)
+addSphereRow(materials)
+
+# diffuseTransmission
+
+materials = []
+for i in range(COLS):
+    diffuseTransmission = i / float(COLS - 1)
+    material = StandardMaterial('diffuseTransmission=%.2f' % diffuseTransmission)
+    material.baseColor = float4(0.5, 0.5, 0.5, 1.0)
+    material.roughness = 0.5
+    material.diffuseTransmission = diffuseTransmission
+    material.doubleSided = True
+    materials.append(material)
+addSphereRow(materials)
+
+materials = []
+for i in range(COLS):
+    diffuseTransmission = i / float(COLS - 1)
+    material = StandardMaterial('(thin) diffuseTransmission=%.2f' % diffuseTransmission)
+    material.baseColor = float4(0.5, 0.5, 0.5, 1.0)
+    material.roughness = 0.5
+    material.diffuseTransmission = diffuseTransmission
+    material.thinSurface = True
+    materials.append(material)
+addLightStrip()
+addQuadRow(materials)
+
+# Create camera
+
+centerX = 0.5 * SPACING * (COLS - 1)
+centerY = -0.5 * SPACING * (ROWS - 1)
+
+camera = Camera()
+camera.position = float3(centerX, centerY, 3 * max(centerX, centerY))
+camera.target = float3(centerX, centerY, 0)
+camera.up = float3(0, 1, 0)
+camera.focalLength = 35
+sceneBuilder.addCamera(camera)
+sceneBuilder.cameraSpeed = 20

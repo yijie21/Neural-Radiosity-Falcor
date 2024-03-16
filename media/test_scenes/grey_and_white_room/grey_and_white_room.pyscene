@@ -1,0 +1,53 @@
+# Load scene
+sceneBuilder.importScene("grey_and_white_room.fbx")
+
+# Load environment map
+sceneBuilder.envMap = EnvMap("envmap.exr")
+sceneBuilder.envMap.intensity = 30
+
+# Adjust emissives to get well exposed image
+for m in sceneBuilder.materials:
+    m.emissiveFactor *= 1
+
+# Disable analytic lights (use envmap only)
+for light in sceneBuilder.lights:
+    light.active = False
+
+# Setup transmissive materials (not supported in the FBX file)
+
+glass = sceneBuilder.getMaterial("grey_and_white_room:Glass")
+glass.roughness = 0
+glass.metallic = 0
+glass.indexOfRefraction = 1.55
+glass.specularTransmission = 1
+glass.doubleSided = True
+glass.nestedPriority = 1
+
+# Adjust materials (these should be fixed in the FBX file)
+
+mirror = sceneBuilder.getMaterial("grey_and_white_room:Mirror")
+mirror.baseColor = float4(0.6, 0.7, 0.7, 1.0)
+mirror.roughness = 0.0
+mirror.metallic = 1.0
+
+m = sceneBuilder.getMaterial("grey_and_white_room:MattePaint")
+m.roughness = 0.5
+
+m = sceneBuilder.getMaterial("grey_and_white_room:Leaves.doublesided")
+m.roughness = 0.5
+
+m = sceneBuilder.getMaterial("grey_and_white_room:Painting")
+m.roughness = 0.2
+
+m = sceneBuilder.getMaterial("grey_and_white_room:Sofa")
+m.roughness = 0.5
+
+m = sceneBuilder.getMaterial("grey_and_white_room:Paneling")
+m.roughness = 0.5
+
+m = sceneBuilder.getMaterial("grey_and_white_room:Walls")
+m.baseColor = float4(0.3, 0.3, 0.3, 1.0)
+m.roughness = 0.5
+
+m = sceneBuilder.getMaterial("grey_and_white_room:PlantPot")
+m.roughness = 0.2

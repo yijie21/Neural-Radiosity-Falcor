@@ -1,0 +1,106 @@
+## Simple test scene for alpha testing.
+##
+## We create row of alpha tested quads that are seen from the front-facing side.
+## Above there is a mirrored row of quads seen from the back-facing side.
+## A mirror and glossy floor reflects these for verifying alpha testing on secondary rays.
+##
+
+# Create environment map
+
+envMap = EnvMap('../envmaps/hallstatt4_hd.hdr')
+envMap.intensity = 3
+envMap.rotation = float3(0, -30, 0)
+sceneBuilder.envMap = envMap
+
+# Add camera
+
+camera = Camera('camera1')
+camera.position = float3(-4.189332,0.484117,2.385936)
+camera.target = float3(-3.551378,0.385075,1.622257)
+camera.up = float3(0, 1, 0)
+camera.focalLength = 24
+sceneBuilder.addCamera(camera)
+
+# Create materials
+
+floorMtl = StandardMaterial('Floor')
+floorMtl.baseColor = float4(0.5, 0.5, 0.5, 1.0)
+floorMtl.roughness = 0.1
+floorMtl.metallic = 1
+
+# Tinted material for us
+mirrorMtl = StandardMaterial('Mirror')
+mirrorMtl.baseColor = float4(0.85, 0.75, 0.90, 1.0)
+mirrorMtl.roughness = 0.0
+mirrorMtl.metallic = 1.0
+
+
+mtl1 = StandardMaterial('mtl1')
+mtl1.loadTexture(MaterialTextureSlot.BaseColor, "textures/a.png")
+mtl1.roughness = 1.0
+mtl1.metallic = 0
+
+mtl2 = StandardMaterial('mtl2')
+mtl2.loadTexture(MaterialTextureSlot.BaseColor, "textures/b.png")
+mtl2.roughness = 1.0
+mtl2.metallic = 0
+
+mtl3 = StandardMaterial('mtl3')
+mtl3.loadTexture(MaterialTextureSlot.BaseColor, "textures/c.png")
+mtl3.roughness = 1.0
+mtl3.metallic = 0
+
+mtl4 = StandardMaterial('mtl4')
+mtl4.loadTexture(MaterialTextureSlot.BaseColor, "textures/d.png")
+mtl4.roughness = 1.0
+mtl4.metallic = 0
+mtl4.doubleSided = True
+
+# Create meshes
+
+floor = TriangleMesh.createQuad()
+floor.name = 'floor'
+
+mirror = TriangleMesh.createQuad()
+mirror.name = 'mirror'
+
+quad = TriangleMesh.createQuad()
+quad.name = 'quad'
+
+# Add meshes
+
+floorID = sceneBuilder.addTriangleMesh(floor, floorMtl)
+mirrorID = sceneBuilder.addTriangleMesh(mirror, mirrorMtl)
+
+quad1ID = sceneBuilder.addTriangleMesh(quad, mtl1)
+quad2ID = sceneBuilder.addTriangleMesh(quad, mtl2)
+quad3ID = sceneBuilder.addTriangleMesh(quad, mtl3)
+quad4ID = sceneBuilder.addTriangleMesh(quad, mtl4)
+
+# Create scene graph
+
+floorNodeID = sceneBuilder.addNode('floorNode', Transform(scaling=100, translation=float3(0, 0, 0), rotationEulerDeg=float3(0, 0, 0)))
+sceneBuilder.addMeshInstance(floorNodeID, floorID)
+
+mirrorNodeID = sceneBuilder.addNode('mirrorNode', Transform(scaling=float3(4, 1, 2), translation=float3(-1, 1.05, -2.0), rotationEulerDeg=float3(90, 0, 0)))
+sceneBuilder.addMeshInstance(mirrorNodeID, mirrorID)
+
+quad1aNodeID = sceneBuilder.addNode('quad1aNode', Transform(scaling=float3( 1, 1, 1), translation=float3(-1.5, 0.5, 0), rotationEulerDeg=float3( 90, 0, 0)))
+quad1bNodeID = sceneBuilder.addNode('quad1bNode', Transform(scaling=float3( 1, 1, 1), translation=float3(-1.5, 1.5, 0), rotationEulerDeg=float3(-90, 0, 0)))
+sceneBuilder.addMeshInstance(quad1aNodeID, quad1ID)
+sceneBuilder.addMeshInstance(quad1bNodeID, quad1ID)
+
+quad2aNodeID = sceneBuilder.addNode('quad2aNode', Transform(scaling=float3( 1, 1, 1), translation=float3(-0.5, 0.5, 0), rotationEulerDeg=float3( 90, 0, 0)))
+quad2bNodeID = sceneBuilder.addNode('quad2bNode', Transform(scaling=float3( 1, 1, 1), translation=float3(-0.5, 1.5, 0), rotationEulerDeg=float3(-90, 0, 0)))
+sceneBuilder.addMeshInstance(quad2aNodeID, quad2ID)
+sceneBuilder.addMeshInstance(quad2bNodeID, quad2ID)
+
+quad3aNodeID = sceneBuilder.addNode('quad3aNode', Transform(scaling=float3( 1, 1, 1), translation=float3( 0.5, 0.5, 0), rotationEulerDeg=float3( 90, 0, 0)))
+quad3bNodeID = sceneBuilder.addNode('quad3bNode', Transform(scaling=float3( 1, 1, 1), translation=float3( 0.5, 1.5, 0), rotationEulerDeg=float3(-90, 0, 0)))
+sceneBuilder.addMeshInstance(quad3aNodeID, quad3ID)
+sceneBuilder.addMeshInstance(quad3bNodeID, quad3ID)
+
+quad4aNodeID = sceneBuilder.addNode('quad4aNode', Transform(scaling=float3( 1, 1, 1), translation=float3( 1.5, 0.5, 0), rotationEulerDeg=float3( 90, 0, 0)))
+quad4bNodeID = sceneBuilder.addNode('quad4bNode', Transform(scaling=float3( 1, 1, 1), translation=float3( 1.5, 1.5, 0), rotationEulerDeg=float3(-90, 0, 0)))
+sceneBuilder.addMeshInstance(quad4aNodeID, quad4ID)
+sceneBuilder.addMeshInstance(quad4bNodeID, quad4ID)

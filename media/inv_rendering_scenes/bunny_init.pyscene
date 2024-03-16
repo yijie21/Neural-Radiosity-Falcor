@@ -1,0 +1,89 @@
+# Create materials
+
+bunny = PBRTDiffuseMaterial('Bunny')
+bunny.baseColor = float4(0.1, 0.1, 0.85, 1.0)
+
+light = StandardMaterial('Light')
+light.baseColor = float4(0)
+light.emissiveColor = float3(17, 12, 4)
+light.emissiveFactor = 0.5
+
+floor = PBRTDiffuseMaterial('Floor')
+floor.baseColor = float4(0.7, 0.7, 0.7, 1.0)
+
+backWall = PBRTDiffuseMaterial('Back Wall')
+backWall.baseColor = float4(0.7, 0.7, 0.7, 1.0)
+
+ceiling = PBRTDiffuseMaterial('Ceiling')
+ceiling.baseColor = float4(0.725, 0.71, 0.68, 1.0)
+
+leftWall = PBRTDiffuseMaterial('Left Wall')
+leftWall.baseColor = float4(0.63, 0.065, 0.05, 1.0)
+
+rightWall = PBRTDiffuseMaterial('Right Wall')
+rightWall.baseColor = float4(0.14, 0.45, 0.091, 1.0)
+
+# Create geometry
+flags = TriangleMeshImportFlags.GenSmoothNormals | TriangleMeshImportFlags.JoinIdenticalVertices
+bunnyMesh = TriangleMesh.createFromFile('./meshes/bunny_centered.obj', flags)
+
+# Make a quad mesh with 5 vertices (one in the center).
+# This is useful for creating a light source.
+quadMesh = TriangleMesh()
+normal = float3(0, 1, 0)
+quadMesh.addVertex(float3(0, 0, 0), normal, float2(0.5, 0.5))
+quadMesh.addVertex(float3(0.5, 0, 0.5), normal, float2(0, 0))
+quadMesh.addVertex(float3(0.5, 0, -0.5), normal, float2(0, 1))
+quadMesh.addVertex(float3(-0.5, 0, -0.5), normal, float2(1, 1))
+quadMesh.addVertex(float3(-0.5, 0, 0.5), normal, float2(1, 0))
+
+quadMesh.addTriangle(0, 1, 2)
+quadMesh.addTriangle(0, 2, 3)
+quadMesh.addTriangle(0, 3, 4)
+quadMesh.addTriangle(0, 4, 1)
+
+# Create mesh instances
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Bunny', Transform(translation=float3(0.01, 0.2, 0.01), rotationEulerDeg=float3(0, 30, 0), scaling=2)),
+    sceneBuilder.addTriangleMesh(bunnyMesh, bunny, True)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Floor', Transform(scaling=float3(0.55, 1.0, 0.56))),
+    sceneBuilder.addTriangleMesh(quadMesh, floor)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Ceiling', Transform(scaling=float3(0.55, 1.0, 0.56), translation=float3(0, 0.55, 0), rotationEulerDeg=float3(180, 0, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, ceiling)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Back Wall', Transform(scaling=float3(0.55, 1.0, 0.56), translation=float3(0, 0.275, -0.275), rotationEulerDeg=float3(90, 0, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, backWall)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Left Wall', Transform(scaling=float3(0.55, 1.0, 0.56), translation=float3(-0.275, 0.275, 0), rotationEulerDeg=float3(0, 0, -90))),
+    sceneBuilder.addTriangleMesh(quadMesh, leftWall)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Right Wall', Transform(scaling=float3(0.55, 1.0, 0.56), translation=float3(0.275, 0.275, 0), rotationEulerDeg=float3(0, 0, 90))),
+    sceneBuilder.addTriangleMesh(quadMesh, rightWall)
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addNode('Light', Transform(scaling=0.4, translation=float3(0, 0.549, 0), rotationEulerDeg=float3(180, 0, 0))),
+    sceneBuilder.addTriangleMesh(quadMesh, light)
+)
+
+# Create camera
+
+camera = Camera()
+camera.position = float3(0, 0.28, 1.2)
+camera.target = float3(0, 0.28, 0)
+camera.up = float3(0, 1, 0)
+camera.focalLength = 42.0
+sceneBuilder.addCamera(camera)

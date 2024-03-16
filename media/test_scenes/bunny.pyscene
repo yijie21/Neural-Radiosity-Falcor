@@ -1,0 +1,41 @@
+# Create materials
+
+floor = Material('Floor')
+floor.baseColor = float4(0.7, 0.7, 0.7, 1.0)
+floor.roughness = 0.1
+
+box = Material('Box')
+box.baseColor = float4(0.9, 0.6, 0.4, 1.0)
+box.roughness = 0.1
+
+# Create geometry
+
+quadMesh = TriangleMesh.createQuad()
+
+bunnyMesh = TriangleMesh.createFromFile('meshes/bunny_dense.obj')
+
+# Create mesh instances
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addTriangleMesh(quadMesh, floor),
+    sceneBuilder.addNode('Floor', Transform(scaling=float3(10, 1, 10)))
+)
+
+sceneBuilder.addMeshInstance(
+    sceneBuilder.addTriangleMesh(bunnyMesh, box),
+    sceneBuilder.addNode('Bunny', Transform(scaling=float3(0.4, 0.4, 0.4), translation=float3(0.1, 0.1, -0.5), rotationEulerDeg=float3(0, 20, 0)))
+)
+
+
+# Create env map
+
+sceneBuilder.envMap = EnvMap('envmaps/20050806-03_hd.hdr')
+
+
+# Create camera
+
+camera = Camera()
+camera.position = float3(0, 0.6, 1.375)
+camera.target = float3(0, 0.5, 0)
+camera.up = float3(0, 1, 0)
+sceneBuilder.addCamera(camera)

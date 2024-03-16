@@ -1,0 +1,79 @@
+# Create environment map
+
+envMap = EnvMap('../envmaps/20060807_wells6_hd.hdr')
+envMap.intensity = 1.5
+sceneBuilder.envMap = envMap
+
+######################
+# Create materials
+######################
+
+sparseMtlX = MxLayeredMaterial('sparseMtlX')
+sparseXml = """
+        <materialx version="1.38" colorspace="lin_rec709" >
+            <texcoord name="ST" type="vector2">
+            </texcoord>
+            <image name="grid_image" type="color3">
+                <input name="texcoord" type="vector2" nodename="ST" value="0, 0" />
+				<input name="file" type="filename" value="textures/udims_sparse/udim_test.<UDIM>.png" />
+            </image>
+            <oren_nayar_diffuse_bsdf name="side1" type="BSDF">
+                <input name="color" type="color3" nodename="grid_image"/>
+            </oren_nayar_diffuse_bsdf>
+            <oren_nayar_diffuse_bsdf name="side2" type="BSDF">
+                <input name="color" type="color3" nodename="grid_image"/>
+            </oren_nayar_diffuse_bsdf>
+            <mix name="mixedLobes" type="BSDF">
+                <input name="fg" type="BSDF" nodename="side1" value="" />
+                <input name="bg" type="BSDF" nodename="side2" value="" />
+                <input name="mix" type="float" value="0.5" />
+            </mix>
+        </materialx>
+"""
+sparseMtlX.setMaterialXBuffer(sparseXml, "mixedLobes")
+sceneBuilder.addMaterial(sparseMtlX)
+
+denseMtlX = MxLayeredMaterial('denseMtlX')
+denseXml = """
+        <materialx version="1.38" colorspace="lin_rec709" >
+            <texcoord name="ST" type="vector2">
+            </texcoord>
+            <image name="grid_image" type="color3">
+                <input name="texcoord" type="vector2" nodename="ST" value="0, 0" />
+				<input name="file" type="filename" value="textures/udims_dense/udim_test.<UDIM>.png" />
+            </image>
+            <oren_nayar_diffuse_bsdf name="side1" type="BSDF">
+                <input name="color" type="color3" nodename="grid_image"/>
+            </oren_nayar_diffuse_bsdf>
+            <oren_nayar_diffuse_bsdf name="side2" type="BSDF">
+                <input name="color" type="color3" nodename="grid_image"/>
+            </oren_nayar_diffuse_bsdf>
+            <mix name="mixedLobes" type="BSDF">
+                <input name="fg" type="BSDF" nodename="side1" value="" />
+                <input name="bg" type="BSDF" nodename="side2" value="" />
+                <input name="mix" type="float" value="0.5" />
+            </mix>
+        </materialx>
+"""
+denseMtlX.setMaterialXBuffer(denseXml, "mixedLobes")
+sceneBuilder.addMaterial(denseMtlX)
+
+materialToShortName = {
+    '/materials/udim_sparse_example': 'sparseMtlX',
+	'/materials/udim_dense_example': 'denseMtlX'
+}
+
+sceneBuilder.importScene('udim_scene.usda', materialToShortName)
+
+# Create camera
+
+centerX = 0
+centerY = 0
+
+camera = Camera()
+camera.position = float3(centerX, centerY, 3 * max(centerX, centerY))
+camera.target = float3(centerX, centerY, 0)
+camera.up = float3(0, 1, 0)
+camera.focalLength = 35
+sceneBuilder.addCamera(camera)
+sceneBuilder.cameraSpeed = 5

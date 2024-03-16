@@ -1,0 +1,46 @@
+# Create environment map
+
+envMap = EnvMap('envmaps/20060807_wells6_hd.hdr')
+envMap.intensity = 3
+sceneBuilder.envMap = envMap
+
+# Create geometry
+
+sphereMesh = TriangleMesh.createSphere()
+
+# Create mesh instances
+
+NX = 8
+NY = 8
+SPACING = 2.5
+
+for x in range(NX):
+    for y in range(NY):
+        translation = float3(x * SPACING, y * SPACING, 0)
+        roughness =  1 - x / float(NX - 1)
+        metallic = 1 - y / float(NY - 1)
+
+        name = 'roughness={:.2f}, metallic={:.2f}'.format(roughness, metallic)
+
+        material = StandardMaterial(name)
+        material.baseColor = float4(0.5, 0.5, 0.5, 1.0)
+        material.roughness = roughness
+        material.metallic = metallic
+
+        sceneBuilder.addMeshInstance(
+            sceneBuilder.addNode(name, Transform(translation=translation)),
+            sceneBuilder.addTriangleMesh(sphereMesh, material)
+        )
+
+# Create camera
+
+centerX = 0.5 * SPACING * (NX - 1)
+centerY = 0.5 * SPACING * (NY - 1)
+
+camera = Camera()
+camera.position = float3(centerX, centerY, 4 * max(centerX, centerY))
+camera.target = float3(centerX, centerY, 0)
+camera.up = float3(0, 1, 0)
+camera.focalLength = 35
+sceneBuilder.addCamera(camera)
+sceneBuilder.cameraSpeed = 20

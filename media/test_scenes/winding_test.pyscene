@@ -1,0 +1,151 @@
+## Simple test scene for triangle winding.
+##
+## Meshes with both CW and CCW winding in object space are created.
+## These are then transformed by instance matrices that either flip or don't flip the winding.
+
+# Create environment map
+envMap = EnvMap('envmaps/hallstatt4_hd.hdr')
+envMap.intensity = 1.0
+envMap.rotation = float3(0, 0, 0)
+sceneBuilder.envMap = envMap
+
+# Add camera
+camera = Camera('camera1')
+camera.position = float3(1.887170,3.274754,6.945673)
+camera.target = float3(1.622666,3.008633,6.018734)
+camera.up = float3(0, 1, 0)
+camera.focalLength = 20
+sceneBuilder.addCamera(camera)
+
+# Create materials
+floorMtl = StandardMaterial('Floor')
+floorMtl.baseColor = float4(0.5, 0.5, 0.5, 1.0)
+floorMtl.roughness = 0.15
+floorMtl.metallic = 1
+
+defaultMtl = StandardMaterial('Default')
+defaultMtl.baseColor = float4(1.0, 1.0, 1.0, 1.0)
+defaultMtl.roughness = 1.0
+defaultMtl.metallic = 0
+
+# Create meshes
+floor = TriangleMesh.createQuad()
+
+quad1 = TriangleMesh.createQuad(float2( 1, 1)) # CCW
+quad2 = TriangleMesh.createQuad(float2(-1, 1)) # CW
+quad3 = TriangleMesh.createQuad(float2( 1,-1)) # CW
+quad4 = TriangleMesh.createQuad(float2(-1,-1)) # CCW
+
+cube1 = TriangleMesh.createCube(float3( 1, 1, 1)) # CCW
+cube2 = TriangleMesh.createCube(float3(-1, 1, 1)) # CW
+cube3 = TriangleMesh.createCube(float3(-1,-1, 1)) # CCW
+cube4 = TriangleMesh.createCube(float3(-1,-1,-1)) # CW
+
+disk1 = TriangleMesh.createDisk(0.5, 3) # CW
+disk2 = TriangleMesh.createDisk(-0.5, 3) # CW
+disk3 = TriangleMesh.createDisk(0.5) # CW
+disk4 = TriangleMesh.createDisk(-0.5) # CW
+
+floor.name = 'floor'
+
+quad1.name = 'quad1'
+quad2.name = 'quad2'
+quad3.name = 'quad3'
+quad4.name = 'quad4'
+
+cube1.name = 'quad1'
+cube2.name = 'cube2'
+cube3.name = 'cube3'
+cube4.name = 'cube4'
+
+disk1.name = 'disk1'
+disk2.name = 'disk2'
+disk3.name = 'disk3'
+disk4.name = 'disk4'
+
+# Add meshes
+floorID = sceneBuilder.addTriangleMesh(floor, floorMtl)
+
+quad1ID = sceneBuilder.addTriangleMesh(quad1, defaultMtl)
+quad2ID = sceneBuilder.addTriangleMesh(quad2, defaultMtl)
+quad3ID = sceneBuilder.addTriangleMesh(quad3, defaultMtl)
+quad4ID = sceneBuilder.addTriangleMesh(quad4, defaultMtl)
+
+cube1ID = sceneBuilder.addTriangleMesh(cube1, defaultMtl)
+cube2ID = sceneBuilder.addTriangleMesh(cube2, defaultMtl)
+cube3ID = sceneBuilder.addTriangleMesh(cube3, defaultMtl)
+cube4ID = sceneBuilder.addTriangleMesh(cube4, defaultMtl)
+
+disk1ID = sceneBuilder.addTriangleMesh(disk1, defaultMtl)
+disk2ID = sceneBuilder.addTriangleMesh(disk2, defaultMtl)
+disk3ID = sceneBuilder.addTriangleMesh(disk3, defaultMtl)
+disk4ID = sceneBuilder.addTriangleMesh(disk4, defaultMtl)
+
+# Create scene graph
+
+# Floor
+floorNodeID = sceneBuilder.addNode('floorNode', Transform(scaling=100, translation=float3(0, 0, 0), rotationEulerDeg=float3(0, 0, 0)))
+sceneBuilder.addMeshInstance(floorNodeID, floorID)
+
+# Quads
+quad11NodeID = sceneBuilder.addNode('quad11Node', Transform(scaling=float3( 1, 1, 1), translation=float3(-3, 1, 0), rotationEulerDeg=float3(90, 0, 0)))
+quad21NodeID = sceneBuilder.addNode('quad21Node', Transform(scaling=float3( 1, 1, 1), translation=float3(-1, 1, 0), rotationEulerDeg=float3(90, 0, 0)))
+quad31NodeID = sceneBuilder.addNode('quad31Node', Transform(scaling=float3( 1, 1, 1), translation=float3( 1, 1, 0), rotationEulerDeg=float3(90, 0, 0)))
+quad41NodeID = sceneBuilder.addNode('quad41Node', Transform(scaling=float3( 1, 1, 1), translation=float3( 3, 1, 0), rotationEulerDeg=float3(90, 0, 0)))
+
+quad12NodeID = sceneBuilder.addNode('quad12Node', Transform(scaling=float3(-1, 1, 1), translation=float3(-3, 2.5, 0), rotationEulerDeg=float3(90, 0, 0)))
+quad22NodeID = sceneBuilder.addNode('quad22Node', Transform(scaling=float3(-1, 1, 1), translation=float3(-1, 2.5, 0), rotationEulerDeg=float3(90, 0, 0)))
+quad32NodeID = sceneBuilder.addNode('quad32Node', Transform(scaling=float3(-1, 1, 1), translation=float3( 1, 2.5, 0), rotationEulerDeg=float3(90, 0, 0)))
+quad42NodeID = sceneBuilder.addNode('quad42Node', Transform(scaling=float3(-1, 1, 1), translation=float3( 3, 2.5, 0), rotationEulerDeg=float3(90, 0, 0)))
+
+sceneBuilder.addMeshInstance(quad11NodeID, quad1ID)
+sceneBuilder.addMeshInstance(quad21NodeID, quad2ID)
+sceneBuilder.addMeshInstance(quad31NodeID, quad3ID)
+sceneBuilder.addMeshInstance(quad41NodeID, quad4ID)
+
+sceneBuilder.addMeshInstance(quad12NodeID, quad1ID)
+sceneBuilder.addMeshInstance(quad22NodeID, quad2ID)
+sceneBuilder.addMeshInstance(quad32NodeID, quad3ID)
+sceneBuilder.addMeshInstance(quad42NodeID, quad4ID)
+
+# Cubes
+cube11NodeID = sceneBuilder.addNode('cube11Node', Transform(scaling=float3( 1, 1, 1), translation=float3(-3, 1, 2), rotationEulerDeg=float3(0, 0, 0)))
+cube21NodeID = sceneBuilder.addNode('cube21Node', Transform(scaling=float3( 1, 1, 1), translation=float3(-1, 1, 2), rotationEulerDeg=float3(0, 0, 0)))
+cube31NodeID = sceneBuilder.addNode('cube31Node', Transform(scaling=float3( 1, 1, 1), translation=float3( 1, 1, 2), rotationEulerDeg=float3(0, 0, 0)))
+cube41NodeID = sceneBuilder.addNode('cube41Node', Transform(scaling=float3( 1, 1, 1), translation=float3( 3, 1, 2), rotationEulerDeg=float3(0, 0, 0)))
+
+cube12NodeID = sceneBuilder.addNode('cube12Node', Transform(scaling=float3(-1, 1, 1), translation=float3(-3, 2.5, 2), rotationEulerDeg=float3(0, 0, 0)))
+cube22NodeID = sceneBuilder.addNode('cube22Node', Transform(scaling=float3(-1, 1, 1), translation=float3(-1, 2.5, 2), rotationEulerDeg=float3(0, 0, 0)))
+cube32NodeID = sceneBuilder.addNode('cube32Node', Transform(scaling=float3(-1, 1, 1), translation=float3( 1, 2.5, 2), rotationEulerDeg=float3(0, 0, 0)))
+cube42NodeID = sceneBuilder.addNode('cube42Node', Transform(scaling=float3(-1, 1, 1), translation=float3( 3, 2.5, 2), rotationEulerDeg=float3(0, 0, 0)))
+
+sceneBuilder.addMeshInstance(cube11NodeID, cube1ID)
+sceneBuilder.addMeshInstance(cube21NodeID, cube2ID)
+sceneBuilder.addMeshInstance(cube31NodeID, cube3ID)
+sceneBuilder.addMeshInstance(cube41NodeID, cube4ID)
+
+sceneBuilder.addMeshInstance(cube12NodeID, cube1ID)
+sceneBuilder.addMeshInstance(cube22NodeID, cube2ID)
+sceneBuilder.addMeshInstance(cube32NodeID, cube3ID)
+sceneBuilder.addMeshInstance(cube42NodeID, cube4ID)
+
+# Disks
+disk11NodeID = sceneBuilder.addNode('disk11Node', Transform(scaling=float3( 1, 1, 1), translation=float3(-3, 1, 4), rotationEulerDeg=float3(90, 0, 0)))
+disk21NodeID = sceneBuilder.addNode('disk21Node', Transform(scaling=float3( 1, 1, 1), translation=float3(-1, 1, 4), rotationEulerDeg=float3(90, 0, 0)))
+disk31NodeID = sceneBuilder.addNode('disk31Node', Transform(scaling=float3( 1, 1, 1), translation=float3( 1, 1, 4), rotationEulerDeg=float3(90, 0, 0)))
+disk41NodeID = sceneBuilder.addNode('disk41Node', Transform(scaling=float3( 1, 1, 1), translation=float3( 3, 1, 4), rotationEulerDeg=float3(90, 0, 0)))
+
+disk12NodeID = sceneBuilder.addNode('disk12Node', Transform(scaling=float3(-1, 1, 1), translation=float3(-3, 2.5, 4), rotationEulerDeg=float3(90, 0, 0)))
+disk22NodeID = sceneBuilder.addNode('disk22Node', Transform(scaling=float3(-1, 1, 1), translation=float3(-1, 2.5, 4), rotationEulerDeg=float3(90, 0, 0)))
+disk32NodeID = sceneBuilder.addNode('disk32Node', Transform(scaling=float3(-1, 1, 1), translation=float3( 1, 2.5, 4), rotationEulerDeg=float3(90, 0, 0)))
+disk42NodeID = sceneBuilder.addNode('disk42Node', Transform(scaling=float3(-1, 1, 1), translation=float3( 3, 2.5, 4), rotationEulerDeg=float3(90, 0, 0)))
+
+sceneBuilder.addMeshInstance(disk11NodeID, disk1ID)
+sceneBuilder.addMeshInstance(disk21NodeID, disk2ID)
+sceneBuilder.addMeshInstance(disk31NodeID, disk3ID)
+sceneBuilder.addMeshInstance(disk41NodeID, disk4ID)
+
+sceneBuilder.addMeshInstance(disk12NodeID, disk1ID)
+sceneBuilder.addMeshInstance(disk22NodeID, disk2ID)
+sceneBuilder.addMeshInstance(disk32NodeID, disk3ID)
+sceneBuilder.addMeshInstance(disk42NodeID, disk4ID)

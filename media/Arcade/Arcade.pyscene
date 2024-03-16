@@ -1,0 +1,31 @@
+# Load FBX
+sceneBuilder.importScene('Arcade.fbx')
+
+# # Adjust emissive screen
+m = sceneBuilder.getMaterial('Cabinet')
+m.emissiveFactor = 150.0
+
+# Add environment map
+envMap = EnvMap('20050806-03_hd.hdr')
+envMap.intensity = 1.0
+sceneBuilder.envMap = envMap
+
+# Add camera
+camera = Camera()
+camera.position = float3(-1.143306016921997, 1.8430896997451783, 2.4423341751098635)
+camera.target = float3(-0.7014234066009522, 1.4863656759262086, 1.6192376613616944)
+camera.up = float3(-0.3762371838092804, 0.6345208287239075, 0.6751033663749695)
+camera.focalLength = 21.0
+sceneBuilder.addCamera(camera)
+
+# Add directional light
+dirLight = DirectionalLight('Directional light')
+dirLight.intensity = float3(1.0, 0.77, 0.54)
+dirLight.direction = float3(0.6245101094245911, -0.7170000076293945, -0.3096744418144226)
+sceneBuilder.addLight(dirLight)
+
+# Add point light
+pointLight = PointLight('Point light')
+pointLight.intensity = float3(0.9, 2.4, 3.0)
+pointLight.position = float3(-2.8681933879852297, 2.0, 2.9874155521392824)
+sceneBuilder.addLight(pointLight)
