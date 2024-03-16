@@ -6,7 +6,7 @@
 
 # Media folders.
 # /media
-/media_internal
+# /media_internal
 
 # Packman folders.
 /external/packman/
