@@ -195,7 +195,7 @@ int main(int argc, char* argv[]) {
 		json config = json::parse(f, nullptr, true, true);
 
 		const uint32_t n_training_steps = 5000;
-		const uint32_t n_input_dims = 3;
+		const uint32_t n_input_dims = 12;
 		const uint32_t n_texture_dims = 2;
 		const uint32_t n_output_dims = 3;
 		const uint32_t batch_size = 1 << 12;
