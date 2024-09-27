@@ -146,3 +146,15 @@ numpages = {11},
 keywords = {neural rendering, neural radiance field}
 }
 ```
+
+If you find this implementation helpful, please consider to cite:
+```bibtex
+@misc{yijie2023neuralradiosity,
+  title={Falcor-Neural_radiosity},
+  author={Yijie, Deng},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished={\url{https://github.com/yijie21/Neural-Radiosity-Falcor/}},
+  year={2023}
+}
+```
